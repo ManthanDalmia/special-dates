@@ -259,10 +259,12 @@
 
         const q = query(eventsRef, orderBy("date"));
         onSnapshot(q, (snapshot) => {
-          const userDates = snapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(event => event.userId === user.uid);
-          renderDates(userDates);
+          // const userDates = snapshot.docs
+          //   .map(doc => ({ id: doc.id, ...doc.data() }))
+          //   .filter(event => event.userId === user.uid);
+          // renderDates(userDates);
+          const sharedDates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          renderDates(sharedDates);
         });
       } else {
         if (user && !allowedEmails.includes(user.email)) {
