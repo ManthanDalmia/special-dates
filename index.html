@@ -246,7 +246,9 @@
       });
     }
 // for a allowed list of email, only allow them to login
-    const allowedEmails = ["manthandalmia2@gmail.com", "shubhi.schedule@gmail.com"];
+    const allowedEmails = ["manthandalmia2@gmail.com", 
+                           // "shubhi.schedule@gmail.com",
+                           "cs1200358@gmail.com"];
     onAuthStateChanged(auth, (user) => {
       const authArea = document.getElementById("authArea");
       if (user && allowedEmails.includes(user.email)) {
