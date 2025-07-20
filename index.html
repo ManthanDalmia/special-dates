@@ -4,30 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Our Special Dates</title>
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap');
     body {
       font-family: 'Quicksand', sans-serif;
       background-color: #2e2b3f;
-      background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/hearts.png');
-      background-repeat: repeat;
-      background-size: auto;
+      background-image: url('https://www.transparenttextures.com/patterns/hearts.png');
+      background-size: contain;
       color: #f8d1d7;
       padding: 20px;
       max-width: 600px;
       margin: auto;
     }
     h1 {
-      color: #ff99aa;
+      color: #ff9ff3;
       text-align: center;
-      animation: heartbeat 2s infinite;
+      font-size: 2.5em;
+      font-family: 'Pacifico', cursive;
+      animation: heartbeat 1.5s infinite;
     }
     @keyframes heartbeat {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
+      50% { transform: scale(1.05); }
     }
     button {
-      background-color: #ff4d6d;
+      background-color: #ff6b81;
       color: white;
       padding: 10px 15px;
       border: none;
@@ -35,15 +39,15 @@
       margin: 10px 0;
       border-radius: 5px;
       cursor: pointer;
-      font-family: 'Quicksand', sans-serif;
+      transition: background-color 0.3s ease;
     }
-    button:hover { background-color: #ff3366; }
+    button:hover { background-color: #ee5253; }
     .form-section {
-      display: none;
       margin-bottom: 20px;
-      background: #3c3c4a;
+      background: #3c3452;
       padding: 15px;
       border-radius: 8px;
+      display: none;
     }
     input[type="text"], input[type="date"], select {
       padding: 10px;
@@ -51,34 +55,38 @@
       margin: 5px 0;
       width: 100%;
       box-sizing: border-box;
-      border: 1px solid #888;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      background: #262635;
-      color: #ffe9f1;
+      background-color: #544a69;
+      color: #f8d1d7;
     }
     .date-entry {
-      background: #3f3f5a;
+      background: #483c5a;
       padding: 15px;
-      border-left: 4px solid #ff4d6d;
+      border-left: 4px solid #ff6b81;
       margin-bottom: 15px;
       border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+    .date-entry:hover {
+      transform: scale(1.01);
     }
     .countdown {
       font-weight: bold;
-      color: #ffc0cb;
+      color: #feca57;
     }
     .actions { margin-top: 10px; }
     .actions button {
       margin-right: 10px;
-      background-color: #bb6bd9;
+      background-color: #576574;
     }
-    .actions button.delete { background-color: #ff6b81; }
+    .actions button.delete { background-color: #ff6b6b; }
     #popup {
       position: fixed;
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: #ff4d6d;
+      background: #ff6b81;
       color: white;
       padding: 12px 20px;
       border-radius: 8px;
@@ -86,190 +94,163 @@
       z-index: 1000;
       display: none;
     }
+    #authButtons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
-
   <h1>💖 Our Special Dates</h1>
-  <div id="popup">✅ Date saved!</div>
-
-  <div id="authArea">
-    <button id="loginBtn">🔐 Login with Google</button>
+  <div id="popup">Saved!</div>
+  <div id="authButtons">
+    <button onclick="signIn()">Sign In with Google</button>
+    <button onclick="signOut()">Sign Out</button>
   </div>
-
-  <div id="addControls" style="display: none;">
-    <button id="toggleBtn">➕ Add Special Date</button>
-
-    <div class="form-section" id="addForm">
-      <input type="text" id="eventName" placeholder="Description (e.g. First Date)" />
-      <input type="date" id="eventDate" />
-      <select id="repeatType">
-        <option value="yearly">Repeat every year</option>
-        <option value="monthly">Repeat every month</option>
-      </select>
-      <button id="saveBtn">💾 Save</button>
-    </div>
+  <button id="addBtn" onclick="toggleForm()" style="display:none">+ Add Special Date</button>
+  <div class="form-section">
+    <input type="text" id="title" placeholder="Title (e.g. Anniversary)" />
+    <input type="date" id="date" />
+    <select id="repeatType">
+      <option value="none">One-time</option>
+      <option value="yearly">Yearly</option>
+      <option value="monthly">Monthly</option>
+    </select>
+    <button onclick="saveDate()">Save</button>
   </div>
-
-  <div id="datesList"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import {
-      getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
+  <div>
+    <label for="sortSelect">Sort by:</label>
+    <select id="sortSelect" onchange="renderDates()">
+      <option value="upcoming">Upcoming</option>
+      <option value="oldest">Oldest</option>
+      <option value="newest">Newest</option>
+    </select>
+  </div>
+  <div id="datesContainer" style="display:none"></div>
+  <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyB5weQ8dmgdbsb4MdKC5n6WqIm1uwV8X5k",
-      authDomain: "special-dates-mannu-shubhuuu.firebaseapp.com",
-      projectId: "special-dates-mannu-shubhuuu",
-      storageBucket: "special-dates-mannu-shubhuuu.appspot.com",
-      messagingSenderId: "886831838183",
-      appId: "1:886831838183:web:4672538e24ba7613c5c342"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-    const eventsRef = collection(db, "specialDates");
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    const loginBtn = document.getElementById("loginBtn");
-    const toggleBtn = document.getElementById("toggleBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const addForm = document.getElementById("addForm");
-    const popup = document.getElementById("popup");
-    const addControls = document.getElementById("addControls");
+    const allowedEmails = [
+      "manthandalmia2@gmail.com",
+      "shubhi.schedule@gmail.com"
+    ];
 
-    loginBtn.onclick = () => signInWithPopup(auth, provider);
+    auth.onAuthStateChanged(user => {
+      const form = document.querySelector('.form-section');
+      const addButton = document.getElementById('addBtn');
+      const datesContainer = document.getElementById('datesContainer');
+      const authButtons = document.getElementById('authButtons');
 
-    toggleBtn.onclick = () => {
-      addForm.style.display = addForm.style.display === "none" || addForm.style.display === "" ? "block" : "none";
-    };
-
-    function showPopup(msg = "✅ Date saved!") {
-      popup.textContent = msg;
-      popup.style.display = "block";
-      setTimeout(() => {
-        popup.style.display = "none";
-      }, 2000);
-    }
-
-    async function addDate() {
-      const name = document.getElementById("eventName").value.trim();
-      const date = document.getElementById("eventDate").value;
-      const repeatType = document.getElementById("repeatType").value;
-      if (!name || !date) return alert("Please enter all fields");
-      try {
-        await addDoc(eventsRef, { name, date, repeatType, userId: auth.currentUser.uid });
-        document.getElementById("eventName").value = "";
-        document.getElementById("eventDate").value = "";
-        addForm.style.display = "none";
-        showPopup();
-      } catch (e) {
-        console.error("Add failed", e);
-        alert("Failed to add date.");
-      }
-    }
-    saveBtn.onclick = addDate;
-
-    function renderDates(dates) {
-      const list = document.getElementById("datesList");
-      list.innerHTML = "";
-      const today = new Date();
-
-      dates.forEach(event => {
-        const eventDate = new Date(event.date);
-        const repeatType = event.repeatType || "yearly";
-        let nextOccurrence;
-        let timePassedStr = "";
-        let timeRemainingStr = "";
-
-        if (repeatType === "yearly") {
-          nextOccurrence = new Date(today.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-          if (nextOccurrence < today) nextOccurrence.setFullYear(today.getFullYear() + 1);
-
-          const yearsPassed = today.getFullYear() - eventDate.getFullYear() - (today < nextOccurrence ? 1 : 0);
-          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
-          timePassedStr = `${yearsPassed} year${yearsPassed !== 1 ? "s" : ""}`;
-          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
-        } else {
-          nextOccurrence = new Date(today.getFullYear(), today.getMonth(), eventDate.getDate());
-          if (nextOccurrence < today) nextOccurrence.setMonth(nextOccurrence.getMonth() + 1);
-
-          const monthsPassed = (today.getFullYear() - eventDate.getFullYear()) * 12 + (today.getMonth() - eventDate.getMonth());
-          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
-          timePassedStr = `${monthsPassed} month${monthsPassed !== 1 ? "s" : ""}`;
-          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
+      if (user) {
+        if (!allowedEmails.includes(user.email)) {
+          alert(`Access denied for ${user.email}`);
+          auth.signOut();
+          return;
         }
 
-        const div = document.createElement("div");
-        div.className = "date-entry";
-        div.innerHTML = `
-          <h3 contenteditable="false">${event.name}</h3>
-          <p>📅 Original Date: ${eventDate.toDateString()}</p>
-          <p>🔁 Repeats: ${repeatType}</p>
-          <p>⏳ Passed: ${timePassedStr}</p>
-          <p class="countdown">🗓️ Next: ${timeRemainingStr} left (on ${nextOccurrence.toDateString()})</p>
-          <div class="actions">
-            <button class="edit">✏️ Edit</button>
-            <button class="delete">🗑️ Delete</button>
-          </div>
-        `;
-
-        div.querySelector(".edit").onclick = async () => {
-          const titleEl = div.querySelector("h3");
-          const isEditing = titleEl.isContentEditable;
-          if (!isEditing) {
-            titleEl.contentEditable = "true";
-            titleEl.focus();
-            div.querySelector(".edit").textContent = "💾 Save";
-          } else {
-            titleEl.contentEditable = "false";
-            div.querySelector(".edit").textContent = "✏️ Edit";
-            await updateDoc(doc(db, "specialDates", event.id), { name: titleEl.innerText });
-            showPopup("✅ Event updated!");
-          }
-        };
-
-        div.querySelector(".delete").onclick = async () => {
-          if (confirm("Delete this event?")) {
-            await deleteDoc(doc(db, "specialDates", event.id));
-            showPopup("🗑️ Event deleted!");
-          }
-        };
-
-        list.appendChild(div);
-      });
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      const authArea = document.getElementById("authArea");
-      if (user) {
-        authArea.innerHTML = `
-          <p>👋 Hello, ${user.displayName}</p>
-          <button id="logoutBtn">🚪 Logout</button>
-        `;
-        document.getElementById("logoutBtn").onclick = () => signOut(auth);
-        addControls.style.display = "block";
-
-        const q = query(eventsRef, orderBy("date"));
-        onSnapshot(q, (snapshot) => {
-          const userDates = snapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(event => event.userId === user.uid);
-          renderDates(userDates);
-        });
+        authButtons.style.display = 'none';
+        addButton.style.display = 'inline-block';
+        datesContainer.style.display = 'block';
+        renderDates();
       } else {
-        document.getElementById("datesList").innerHTML = "";
-        authArea.innerHTML = `<button id="loginBtn">🔐 Login with Google</button>`;
-        document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
-        addControls.style.display = "none";
+        authButtons.style.display = 'block';
+        form.style.display = 'none';
+        addButton.style.display = 'none';
+        datesContainer.style.display = 'none';
       }
     });
+
+    function signIn() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider);
+    }
+
+    function signOut() {
+      auth.signOut();
+    }
+
+    function toggleForm() {
+      const form = document.querySelector('.form-section');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function saveDate() {
+      const title = document.getElementById('title').value;
+      const date = document.getElementById('date').value;
+      const repeatType = document.getElementById('repeatType').value;
+      const user = auth.currentUser;
+
+      if (!title || !date || !user) return;
+
+      await db.collection('dates').add({
+        uid: user.uid,
+        title,
+        date,
+        repeatType,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      document.getElementById('popup').style.display = 'block';
+      setTimeout(() => document.getElementById('popup').style.display = 'none', 2000);
+      renderDates();
+    }
+
+    async function renderDates() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const sort = document.getElementById('sortSelect').value;
+      let ref = db.collection('dates').where('uid', '==', user.uid);
+      if (sort === 'oldest') ref = ref.orderBy('createdAt', 'asc');
+      else if (sort === 'newest') ref = ref.orderBy('createdAt', 'desc');
+
+      const snapshot = await ref.get();
+      const container = document.getElementById('datesContainer');
+      container.innerHTML = '';
+
+      const now = new Date();
+
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const eventDate = new Date(data.date);
+        let countdownText = '';
+
+        const diffMs = eventDate.getTime() - now.getTime();
+        const past = diffMs < 0;
+
+        if (data.repeatType === 'yearly') {
+          let thisYear = new Date(now.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+          if (thisYear < now) thisYear.setFullYear(now.getFullYear() + 1);
+          countdownText = `${Math.ceil((thisYear - now) / (1000 * 60 * 60 * 24))} days until next`;
+        } else if (data.repeatType === 'monthly') {
+          let thisMonth = new Date(now.getFullYear(), now.getMonth(), eventDate.getDate());
+          if (thisMonth < now) thisMonth.setMonth(thisMonth.getMonth() + 1);
+          countdownText = `${Math.ceil((thisMonth - now) / (1000 * 60 * 60 * 24))} days until next`;
+        } else {
+          countdownText = `${Math.abs(Math.ceil(diffMs / (1000 * 60 * 60 * 24)))} days ${past ? 'ago' : 'left'}`;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'date-entry';
+        div.innerHTML = `
+          <strong>${data.title}</strong><br>
+          <span>${eventDate.toDateString()}</span><br>
+          <span class="countdown">${countdownText}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
   </script>
 </body>
 </html>
