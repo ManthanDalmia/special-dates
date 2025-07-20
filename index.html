@@ -6,63 +6,76 @@
   <title>Our Special Dates</title>
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500&display=swap" rel="stylesheet">
   <style>
-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-h1 {
-  color: #ff99aa;
-  text-align: center;
-  font-size: 3rem;
-  animation: heartbeat 2.5s infinite ease-in-out, glow 2s ease-in-out infinite alternate;
-  margin-bottom: 40px;
-  font-family: 'Patrick Hand', cursive;
-}
-
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-}
-
-@keyframes glow {
-  0% {
-    text-shadow: 0 0 5px #ff99aa, 0 0 10px #ff6b81, 0 0 15px #ff4d6d;
-  }
-  100% {
-    text-shadow: 0 0 10px #ff99aa, 0 0 20px #ff6b81, 0 0 30px #ff4d6d;
-  }
-}
-
-#authArea {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#loginBtn {
-  animation: fadeInUp 1.5s ease;
-  font-size: 18px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: #ff6b81;
-  box-shadow: 0 4px 15px rgba(255, 105, 135, 0.4);
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #2e2b3f;
+      background-image: url('https://media.istockphoto.com/id/2196296234/vector/seamless-hearts-doodles-and-drawings-wallpaper-background.jpg?s=612x612&w=0&k=20&c=IAomLnRguQcPGQjvkQ4z-o57NX3olS5DMWzag61DtIQ=');
+      background-repeat: repeat;
+      background-size: cover;
+      background-attachment: fixed;
+      color: #f8d1d7;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    h1 {
+      color: #ff99aa;
+      text-align: center;
+      font-size: 3rem;
+      animation: heartbeat 2.5s infinite ease-in-out, glow 2s ease-in-out infinite alternate;
+      margin-bottom: 40px;
+      font-family: 'Patrick Hand', cursive;
+    }
+  
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+  
+    @keyframes glow {
+      0% {
+        text-shadow: 0 0 2px #ff99aa, 0 0 4px #ff6b81;
+      }
+      100% {
+        text-shadow: 0 0 4px #ff99aa, 0 0 6px #ff6b81;
+      }
+    }
+  
+    #authArea {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    #loginBtn {
+      animation: fadeInUp 1.5s ease;
+      font-size: 18px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      background: #ff6b81;
+      color: white;
+      border: none;
+      box-shadow: 0 4px 15px rgba(255, 105, 135, 0.4);
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+    }
+  
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  
     button {
       background-color: #ff4d6d;
       color: white;
@@ -74,7 +87,9 @@ h1 {
       cursor: pointer;
       font-family: 'Quicksand', sans-serif;
     }
+  
     button:hover { background-color: #ff3366; }
+  
     .form-section {
       display: none;
       margin-bottom: 20px;
@@ -82,6 +97,7 @@ h1 {
       padding: 15px;
       border-radius: 8px;
     }
+  
     input[type="text"], input[type="date"], select {
       padding: 10px;
       font-size: 16px;
@@ -93,6 +109,7 @@ h1 {
       background: #262635;
       color: #ffe9f1;
     }
+  
     .date-entry {
       background: #3f3f5a;
       padding: 15px;
@@ -100,16 +117,21 @@ h1 {
       margin-bottom: 15px;
       border-radius: 5px;
     }
+  
     .countdown {
       font-weight: bold;
       color: #ffc0cb;
     }
+  
     .actions { margin-top: 10px; }
+  
     .actions button {
       margin-right: 10px;
       background-color: #bb6bd9;
     }
+  
     .actions button.delete { background-color: #ff6b81; }
+  
     #popup {
       position: fixed;
       top: 20px;
@@ -124,6 +146,7 @@ h1 {
       display: none;
     }
   </style>
+  
 </head>
 <body>
 
