@@ -52,18 +52,33 @@
       align-items: center;
     }
   
+/* Shared glassy pink button style */
+    button,
+    #logoutBtn,
     #loginBtn {
-      animation: fadeInUp 1.5s ease;
-      font-size: 18px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      background: #ff6b81;
-      color: white;
-      border: none;
-      box-shadow: 0 4px 15px rgba(255, 105, 135, 0.4);
-      cursor: pointer;
+      background: rgba(255, 105, 135, 0.35); /* glassy pink */
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 16px;
       font-family: 'Quicksand', sans-serif;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(255, 105, 135, 0.25);
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
+
+    /* Hover effect */
+    button:hover,
+    #logoutBtn:hover,
+    #loginBtn:hover {
+      background: rgba(255, 105, 135, 0.5);
+      box-shadow: 0 6px 20px rgba(255, 105, 135, 0.4);
+      transform: translateY(-1px);
+    }
+
   
     @keyframes fadeInUp {
       from {
@@ -172,7 +187,7 @@
       padding: 8px 12px;
       border-radius: 8px;
     }
-
+/* 
     #logoutBtn {
       font-size: 14px;
       background: #ff4d6d;
@@ -183,7 +198,7 @@
       font-family: 'Quicksand', sans-serif;
       color: white;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
+    } */
 
   </style>
   
