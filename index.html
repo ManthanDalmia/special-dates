@@ -377,6 +377,8 @@
 
         document.getElementById("logoutBtn").onclick = () => signOut(auth);
         addControls.style.display = "block";
+        // Ensure the form is hidden initially after login
+        addForm.style.display = "none";
 
         const q = query(eventsRef, orderBy("date"));
         onSnapshot(q, (snapshot) => {
