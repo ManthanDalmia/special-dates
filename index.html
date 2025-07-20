@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Special Dates</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fdf6f0;
+      color: #333;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 { color: #c44569; text-align: center; }
+    button {
+      background-color: #c44569;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      font-size: 16px;
+      margin: 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #a63857; }
+    .form-section {
+      display: none;
+      margin-bottom: 20px;
+      background: #fff0f5;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    input[type="text"], input[type="date"], select {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .date-entry {
+      background: #f9e9f0;
+      padding: 15px;
+      border-left: 4px solid #c44569;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+    .countdown {
+      font-weight: bold;
+      color: #4b6584;
+    }
+    .actions { margin-top: 10px; }
+    .actions button {
+      margin-right: 10px;
+      background-color: #82589F;
+    }
+    .actions button.delete { background-color: #eb4d4b; }
+    #popup {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #c44569;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💖 Our Special Dates</h1>
+  <div id="popup">✅ Date saved!</div>
+
+  <div id="authArea">
+    <button id="loginBtn">🔐 Login with Google</button>
+  </div>
+
+  <button id="toggleBtn">➕ Add Special Date</button>
+
+  <div class="form-section" id="addForm">
+    <input type="text" id="eventName" placeholder="Description (e.g. First Date)" />
+    <input type="date" id="eventDate" />
+    <select id="repeatType">
+      <option value="yearly">Repeat every year</option>
+      <option value="monthly">Repeat every month</option>
+    </select>
+    <button id="saveBtn">💾 Save</button>
+  </div>
+
+  <div id="datesList"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5weQ8dmgdbsb4MdKC5n6WqIm1uwV8X5k",
+      authDomain: "special-dates-mannu-shubhuuu.firebaseapp.com",
+      projectId: "special-dates-mannu-shubhuuu",
+      storageBucket: "special-dates-mannu-shubhuuu.appspot.com",
+      messagingSenderId: "886831838183",
+      appId: "1:886831838183:web:4672538e24ba7613c5c342"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    const eventsRef = collection(db, "specialDates");
+
+    const loginBtn = document.getElementById("loginBtn");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const addForm = document.getElementById("addForm");
+    const popup = document.getElementById("popup");
+
+    loginBtn.onclick = () => signInWithPopup(auth, provider);
+
+    toggleBtn.onclick = () => {
+      addForm.style.display = addForm.style.display === "none" || addForm.style.display === "" ? "block" : "none";
+    };
+
+    function showPopup(msg = "✅ Date saved!") {
+      popup.textContent = msg;
+      popup.style.display = "block";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 2000);
+    }
+
+    async function addDate() {
+      const name = document.getElementById("eventName").value.trim();
+      const date = document.getElementById("eventDate").value;
+      const repeatType = document.getElementById("repeatType").value;
+      if (!name || !date) return alert("Please enter all fields");
+      try {
+        await addDoc(eventsRef, { name, date, repeatType, userId: auth.currentUser.uid });
+        document.getElementById("eventName").value = "";
+        document.getElementById("eventDate").value = "";
+        addForm.style.display = "none";
+        showPopup();
+      } catch (e) {
+        console.error("Add failed", e);
+        alert("Failed to add date.");
+      }
+    }
+    saveBtn.onclick = addDate;
+
+    function renderDates(dates) {
+      const list = document.getElementById("datesList");
+      list.innerHTML = "";
+      const today = new Date();
+
+      dates.forEach(event => {
+        const eventDate = new Date(event.date);
+        const repeatType = event.repeatType || "yearly";
+        let nextOccurrence;
+        let timePassedStr = "";
+        let timeRemainingStr = "";
+
+        if (repeatType === "yearly") {
+          nextOccurrence = new Date(today.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+          if (nextOccurrence < today) nextOccurrence.setFullYear(today.getFullYear() + 1);
+
+          const yearsPassed = today.getFullYear() - eventDate.getFullYear() - (today < nextOccurrence ? 1 : 0);
+          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
+          timePassedStr = `${yearsPassed} year${yearsPassed !== 1 ? "s" : ""}`;
+          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
+        } else {
+          nextOccurrence = new Date(today.getFullYear(), today.getMonth(), eventDate.getDate());
+          if (nextOccurrence < today) nextOccurrence.setMonth(nextOccurrence.getMonth() + 1);
+
+          const monthsPassed = (today.getFullYear() - eventDate.getFullYear()) * 12 + (today.getMonth() - eventDate.getMonth());
+          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
+          timePassedStr = `${monthsPassed} month${monthsPassed !== 1 ? "s" : ""}`;
+          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
+        }
+
+        const div = document.createElement("div");
+        div.className = "date-entry";
+        div.innerHTML = `
+          <h3 contenteditable="false">${event.name}</h3>
+          <p>📅 Original Date: ${eventDate.toDateString()}</p>
+          <p>🔁 Repeats: ${repeatType}</p>
+          <p>⏳ Passed: ${timePassedStr}</p>
+          <p class="countdown">🗓️ Next: ${timeRemainingStr} left (on ${nextOccurrence.toDateString()})</p>
+          <div class="actions">
+            <button class="edit">✏️ Edit</button>
+            <button class="delete">🗑️ Delete</button>
+          </div>
+        `;
+
+        div.querySelector(".edit").onclick = async () => {
+          const titleEl = div.querySelector("h3");
+          const isEditing = titleEl.isContentEditable;
+          if (!isEditing) {
+            titleEl.contentEditable = "true";
+            titleEl.focus();
+            div.querySelector(".edit").textContent = "💾 Save";
+          } else {
+            titleEl.contentEditable = "false";
+            div.querySelector(".edit").textContent = "✏️ Edit";
+            await updateDoc(doc(db, "specialDates", event.id), { name: titleEl.innerText });
+            showPopup("✅ Event updated!");
+          }
+        };
+
+        div.querySelector(".delete").onclick = async () => {
+          if (confirm("Delete this event?")) {
+            await deleteDoc(doc(db, "specialDates", event.id));
+            showPopup("🗑️ Event deleted!");
+          }
+        };
+
+        list.appendChild(div);
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      const authArea = document.getElementById("authArea");
+      if (user) {
+        authArea.innerHTML = `
+          <p>👋 Hello, ${user.displayName}</p>
+          <button id="logoutBtn">🚪 Logout</button>
+        `;
+        document.getElementById("logoutBtn").onclick = () => signOut(auth);
+
+        const q = query(eventsRef, orderBy("date"));
+        onSnapshot(q, (snapshot) => {
+          const userDates = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(event => event.userId === user.uid);
+          renderDates(userDates);
+        });
+      } else {
+        document.getElementById("datesList").innerHTML = "";
+        authArea.innerHTML = `<button id="loginBtn">🔐 Login with Google</button>`;
+        document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
+      }
+    });
+  </script>
+</body>
+</html>
