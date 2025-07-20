@@ -4,18 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Our Special Dates</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fdf6f0;
-      color: #333;
+      font-family: 'Quicksand', sans-serif;
+      background-color: #2e2b3f;
+      background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/hearts.png');
+      background-repeat: repeat;
+      background-size: auto;
+      color: #f8d1d7;
       padding: 20px;
       max-width: 600px;
       margin: auto;
     }
-    h1 { color: #c44569; text-align: center; }
+    h1 {
+      color: #ff99aa;
+      text-align: center;
+      animation: heartbeat 2s infinite;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
     button {
-      background-color: #c44569;
+      background-color: #ff4d6d;
       color: white;
       padding: 10px 15px;
       border: none;
@@ -23,12 +35,13 @@
       margin: 10px 0;
       border-radius: 5px;
       cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
     }
-    button:hover { background-color: #a63857; }
+    button:hover { background-color: #ff3366; }
     .form-section {
       display: none;
       margin-bottom: 20px;
-      background: #fff0f5;
+      background: #3c3c4a;
       padding: 15px;
       border-radius: 8px;
     }
@@ -38,32 +51,34 @@
       margin: 5px 0;
       width: 100%;
       box-sizing: border-box;
-      border: 1px solid #ccc;
+      border: 1px solid #888;
       border-radius: 4px;
+      background: #262635;
+      color: #ffe9f1;
     }
     .date-entry {
-      background: #f9e9f0;
+      background: #3f3f5a;
       padding: 15px;
-      border-left: 4px solid #c44569;
+      border-left: 4px solid #ff4d6d;
       margin-bottom: 15px;
       border-radius: 5px;
     }
     .countdown {
       font-weight: bold;
-      color: #4b6584;
+      color: #ffc0cb;
     }
     .actions { margin-top: 10px; }
     .actions button {
       margin-right: 10px;
-      background-color: #82589F;
+      background-color: #bb6bd9;
     }
-    .actions button.delete { background-color: #eb4d4b; }
+    .actions button.delete { background-color: #ff6b81; }
     #popup {
       position: fixed;
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: #c44569;
+      background: #ff4d6d;
       color: white;
       padding: 12px 20px;
       border-radius: 8px;
@@ -82,16 +97,18 @@
     <button id="loginBtn">🔐 Login with Google</button>
   </div>
 
-  <button id="toggleBtn">➕ Add Special Date</button>
+  <div id="addControls" style="display: none;">
+    <button id="toggleBtn">➕ Add Special Date</button>
 
-  <div class="form-section" id="addForm">
-    <input type="text" id="eventName" placeholder="Description (e.g. First Date)" />
-    <input type="date" id="eventDate" />
-    <select id="repeatType">
-      <option value="yearly">Repeat every year</option>
-      <option value="monthly">Repeat every month</option>
-    </select>
-    <button id="saveBtn">💾 Save</button>
+    <div class="form-section" id="addForm">
+      <input type="text" id="eventName" placeholder="Description (e.g. First Date)" />
+      <input type="date" id="eventDate" />
+      <select id="repeatType">
+        <option value="yearly">Repeat every year</option>
+        <option value="monthly">Repeat every month</option>
+      </select>
+      <button id="saveBtn">💾 Save</button>
+    </div>
   </div>
 
   <div id="datesList"></div>
@@ -125,6 +142,7 @@
     const saveBtn = document.getElementById("saveBtn");
     const addForm = document.getElementById("addForm");
     const popup = document.getElementById("popup");
+    const addControls = document.getElementById("addControls");
 
     loginBtn.onclick = () => signInWithPopup(auth, provider);
 
@@ -236,6 +254,7 @@
           <button id="logoutBtn">🚪 Logout</button>
         `;
         document.getElementById("logoutBtn").onclick = () => signOut(auth);
+        addControls.style.display = "block";
 
         const q = query(eventsRef, orderBy("date"));
         onSnapshot(q, (snapshot) => {
@@ -248,6 +267,7 @@
         document.getElementById("datesList").innerHTML = "";
         authArea.innerHTML = `<button id="loginBtn">🔐 Login with Google</button>`;
         document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
+        addControls.style.display = "none";
       }
     });
   </script>
