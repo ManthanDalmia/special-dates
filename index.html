@@ -145,6 +145,41 @@
       z-index: 1000;
       display: none;
     }
+    #topBar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      width: calc(100% - 40px);
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    #userName {
+      font-size: 16px;
+      font-weight: 500;
+      color: #ffe9f1;
+      background: rgba(60, 60, 80, 0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    #logoutBtn {
+      font-size: 14px;
+      background: #ff4d6d;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Quicksand', sans-serif;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
   </style>
   
 </head>
@@ -314,9 +349,12 @@
       const authArea = document.getElementById("authArea");
       if (user && allowedEmails.includes(user.email)) {
         authArea.innerHTML = `
-          <p>👋 Hello, ${user.displayName}</p>
-          <button id="logoutBtn">🚪 Logout</button>
+          <div id="topBar">
+            <div id="userName">👋 Hello, ${user.displayName}</div>
+            <button id="logoutBtn">🚪 Logout</button>
+          </div>
         `;
+
         document.getElementById("logoutBtn").onclick = () => signOut(auth);
         addControls.style.display = "block";
 
