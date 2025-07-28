@@ -205,6 +205,14 @@
 </head>
 <body>
 
+  <button id="spotifyLoginBtn">🎧 Connect Spotify</button>
+  <div id="playerControls" style="display:none;">
+    <p id="trackInfo">🎵 No track playing</p>
+    <button id="playBtn">▶️ Play</button>
+    <button id="pauseBtn">⏸️ Pause</button>
+    <button id="nextBtn">⏭️ Next</button>
+  </div>
+
   <div id="authContainer" style="animation: fadeInUp 1.5s ease;">
     <h1>💖 Our Special Dates</h1>
     <div id="authArea">
@@ -402,6 +410,95 @@
       }
     });
     // });
+
+    const clientId = "180525939eb74473a44decab3706ab35"; // 👈 Replace this
+    const redirectUri = window.location.origin + "/callback.html"; // 👈 You need to create this page
+    const scopes = [
+      "streaming",
+      "user-read-email",
+      "user-read-private",
+      "user-modify-playback-state",
+      "user-read-playback-state"
+    ];
+
+    const loginBtn = document.getElementById("spotifyLoginBtn");
+    let accessToken = null;
+
+    loginBtn.onclick = () => {
+      const authUrl =
+        "https://accounts.spotify.com/authorize" +
+        `?client_id=${clientId}` +
+        `&response_type=token` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&scope=${encodeURIComponent(scopes.join(" "))}`;
+      window.location.href = authUrl;
+    };
+
+    function getAccessTokenFromUrl() {
+      const hash = window.location.hash;
+      if (!hash) return null;
+      const params = new URLSearchParams(hash.substring(1));
+      return params.get("access_token");
+    }
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
+    accessToken = getAccessTokenFromUrl();
+    if (!accessToken) return;
+
+    document.getElementById("playerControls").style.display = "block";
+    document.getElementById("spotifyLoginBtn").style.display = "none";
+
+    const player = new Spotify.Player({
+      name: "Mannu & Shubhuu's Player 💖",
+      getOAuthToken: cb => { cb(accessToken); },
+      volume: 0.5
+    });
+
+    // Error handling
+    player.addListener("initialization_error", e => console.error(e));
+    player.addListener("authentication_error", e => console.error(e));
+    player.addListener("account_error", e => console.error(e));
+    player.addListener("playback_error", e => console.error(e));
+
+    // Ready
+    player.addListener("ready", ({ device_id }) => {
+      console.log("Player ready with device_id", device_id);
+      playYourPlaylist(device_id);
+    });
+
+    // Track change listener
+    player.addListener("player_state_changed", state => {
+      if (!state) return;
+      const track = state.track_window.current_track;
+      document.getElementById("trackInfo").textContent = `🎶 ${track.name} by ${track.artists.map(a => a.name).join(", ")}`;
+    });
+
+    // Connect to the player!
+    player.connect();
+
+    // Controls
+    document.getElementById("playBtn").onclick = () => player.resume();
+    document.getElementById("pauseBtn").onclick = () => player.pause();
+    document.getElementById("nextBtn").onclick = () => player.nextTrack();
+
+      async function playYourPlaylist(deviceId) {
+        const playlistUri = "spotify:playlist:4P6pTQj9thCDa0CNGSyhiH"; // 👈 your playlist
+
+        await fetch("https://api.spotify.com/v1/me/player/play", {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            device_id: deviceId,
+            context_uri: playlistUri,
+            offset: { position: 0 }
+          })
+        });
+      }
+    };
+
     const playlistId = "1F6pRacP8ujspgERfPGNLx";
     const spotifyFrame = document.getElementById("spotifyFrame");
     const toggleMusic = document.getElementById("toggleMusic");
@@ -422,7 +519,7 @@
         toggleMusic.textContent = "🎵 Play Music";
       }
     };
-
+    
   </script>
   <div id="musicPlayer" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.5); border-radius: 12px; padding: 10px;">
     <button id="toggleMusic" style="background: rgba(255, 105, 135, 0.4); border: none; border-radius: 10px; padding: 8px 12px; color: white; font-family: 'Quicksand', sans-serif; cursor: pointer;">
@@ -430,5 +527,7 @@
     </button>
     <iframe id="spotifyFrame" style="margin-top: 10px; display: none; border-radius:12px;" src="" width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
   </div>
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+
 </body>
 </html>
