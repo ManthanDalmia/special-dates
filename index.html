@@ -402,6 +402,33 @@
       }
     });
     // });
+    const playlistId = "4P6pTQj9thCDa0CNGSyhiH";
+    const spotifyFrame = document.getElementById("spotifyFrame");
+    const toggleMusic = document.getElementById("toggleMusic");
+
+    const tracks = [
+      "spotify:track:1", // Replace with actual Spotify track URIs if you want fixed songs
+      "spotify:track:2"
+    ];
+
+    // Just play the playlist (random songs automatically handled by Spotify)
+    toggleMusic.onclick = () => {
+      if (spotifyFrame.style.display === "none") {
+        spotifyFrame.src = `https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`;
+        spotifyFrame.style.display = "block";
+        toggleMusic.textContent = "⏸️ Hide Music";
+      } else {
+        spotifyFrame.style.display = "none";
+        toggleMusic.textContent = "🎵 Play Music";
+      }
+    };
+
   </script>
+  <div id="musicPlayer" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.5); border-radius: 12px; padding: 10px;">
+    <button id="toggleMusic" style="background: rgba(255, 105, 135, 0.4); border: none; border-radius: 10px; padding: 8px 12px; color: white; font-family: 'Quicksand', sans-serif; cursor: pointer;">
+      🎵 Play Music
+    </button>
+    <iframe id="spotifyFrame" style="margin-top: 10px; display: none; border-radius:12px;" src="" width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+  </div>
 </body>
 </html>
