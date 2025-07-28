@@ -1,19 +1,16 @@
-<!-- public/callback.html -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <script>
-      window.onload = function () {
-        if (window.location.hash) {
-          window.location.href = "/" + window.location.hash;
-        } else {
-          window.location.href = "/";
-        }
-      };
-    </script>
-  </head>
-  <body>
-    Redirecting...
-  </body>
+<head>
+  <title>Spotify Callback</title>
+</head>
+<body>
+  <script>
+    // Redirect back to index.html and pass the access_token in hash
+    if (window.location.hash) {
+      window.location.href = "/special-dates/index.html" + window.location.hash;
+    } else {
+      document.body.innerHTML = "No token found.";
+    }
+  </script>
+</body>
 </html>
