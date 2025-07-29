@@ -317,8 +317,18 @@
           if (nextOccurrence < today) nextOccurrence.setMonth(nextOccurrence.getMonth() + 1);
 
           const monthsPassed = (today.getFullYear() - eventDate.getFullYear()) * 12 + (today.getMonth() - eventDate.getMonth());
+          const fullDiffInDays = Math.floor((today - eventDate) / (1000 * 60 * 60 * 24));
+          let tempDate = new Date(eventDate);
+          tempDate.setMonth(tempDate.getMonth() + monthsPassed);
+          let daysPassed = Math.floor((today - tempDate) / (1000 * 60 * 60 * 24));
+          if (daysPassed < 0) {
+            // If overshot the current day (e.g., Feb to Mar), backtrack one month
+            tempDate.setMonth(tempDate.getMonth() - 1);
+            daysPassed = Math.floor((today - tempDate) / (1000 * 60 * 60 * 24));
+            monthsPassed--;
+          }
           const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
-          timePassedStr = `${monthsPassed} month${monthsPassed !== 1 ? "s" : ""}`;
+          timePassedStr = `${monthsPassed} month${monthsPassed !== 1 ? "s" : ""}, ${daysPassed} day${daysPassed !== 1 ? "s" : ""}`;
           timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
         }
 
@@ -363,7 +373,7 @@
     }
 // for a allowed list of email, only allow them to login
     const allowedEmails = ["manthandalmia2@gmail.com", 
-                           // "shubhi.schedule@gmail.com",
+                           "shubhi.schedule@gmail.com",
                            "cs1200358@gmail.com"];
     onAuthStateChanged(auth, (user) => {
       const authArea = document.getElementById("authArea");
