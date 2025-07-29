@@ -145,13 +145,39 @@
   
     .actions { margin-top: 10px; }
   
-    .actions button {
+    .actions button,
+    #toggleBtn {
       margin-right: 10px;
-      background-color: #bb6bd9;
+      background: rgba(187, 107, 217, 0.35); /* purple for edit */
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 15px;
+      font-family: 'Quicksand', sans-serif;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(187, 107, 217, 0.25);
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-  
-    .actions button.delete { background-color: #ff6b81; }
-  
+
+    .actions button:hover,
+    #toggleBtn:hover {
+      background: rgba(187, 107, 217, 0.5);
+      box-shadow: 0 6px 20px rgba(187, 107, 217, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .actions button.delete {
+      background: rgba(255, 107, 129, 0.35); /* pinkish red */
+      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.25);
+    }
+
+    .actions button.delete:hover {
+      background: rgba(255, 107, 129, 0.5);
+      box-shadow: 0 6px 20px rgba(255, 107, 129, 0.4);
+    }
     #popup {
       position: fixed;
       top: 20px;
