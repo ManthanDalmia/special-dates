@@ -342,7 +342,7 @@
           nextOccurrence = new Date(today.getFullYear(), today.getMonth(), eventDate.getDate());
           if (nextOccurrence < today) nextOccurrence.setMonth(nextOccurrence.getMonth() + 1);
 
-          const monthsPassed = (today.getFullYear() - eventDate.getFullYear()) * 12 + (today.getMonth() - eventDate.getMonth());
+          let monthsPassed = (today.getFullYear() - eventDate.getFullYear()) * 12 + (today.getMonth() - eventDate.getMonth());
           const fullDiffInDays = Math.floor((today - eventDate) / (1000 * 60 * 60 * 24));
           let tempDate = new Date(eventDate);
           tempDate.setMonth(tempDate.getMonth() + monthsPassed);
