@@ -1,443 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Our Special Dates</title>
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background-color: #2e2b3f;
-      background-image: url('https://media.istockphoto.com/id/2196296234/vector/seamless-hearts-doodles-and-drawings-wallpaper-background.jpg?s=612x612&w=0&k=20&c=IAomLnRguQcPGQjvkQ4z-o57NX3olS5DMWzag61DtIQ=');
-      background-repeat: repeat;
-      background-size: cover;
-      background-attachment: fixed;
-      color: #f8d1d7;
-      padding: 20px;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-  
-    h1 {
-      color: #ff99aa;
-      text-align: center;
-      font-size: 3rem;
-      animation: heartbeat 2.5s infinite ease-in-out, glow 2s ease-in-out infinite alternate;
-      margin-bottom: 40px;
-      font-family: 'Patrick Hand', cursive;
-    }
-  
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
-  
-    @keyframes glow {
-      0% {
-        text-shadow: 0 0 2px #ff99aa, 0 0 4px #ff6b81;
-      }
-      100% {
-        text-shadow: 0 0 4px #ff99aa, 0 0 6px #ff6b81;
-      }
-    }
-  
-    #authArea {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  
-/* Shared glassy pink button style */
-    button,
-    #logoutBtn,
-    #loginBtn {
-      background: rgba(255, 105, 135, 0.35); /* glassy pink */
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 10px 18px;
-      font-size: 16px;
-      font-family: 'Quicksand', sans-serif;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(255, 105, 135, 0.25);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+<meta charset="UTF-8">
+<title>Shubhi, Be My Barbie Valentine 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
-    /* Hover effect */
-    button:hover,
-    #logoutBtn:hover,
-    #loginBtn:hover {
-      background: rgba(255, 105, 135, 0.5);
-      box-shadow: 0 6px 20px rgba(255, 105, 135, 0.4);
-      transform: translateY(-1px);
-    }
+<style>
+* { box-sizing: border-box; }
 
-  
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  
-    button {
-      background-color: #ff4d6d;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      font-size: 16px;
-      margin: 10px 0;
-      border-radius: 5px;
-      cursor: pointer;
-      font-family: 'Quicksand', sans-serif;
-    }
-  
-    button:hover { background-color: #ff3366; }
-  
-    .form-section {
-      display: none;
-      margin-bottom: 20px;
-      background: #3c3c4a;
-      padding: 15px;
-      border-radius: 8px;
-    }
-  
-    input[type="text"], input[type="date"], select {
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-      border: 1px solid #888;
-      border-radius: 4px;
-      background: #262635;
-      color: #ffe9f1;
-    }
-  
-    .date-entry {
-      background: rgba(255, 255, 255, 0.08);
-      border-left: 4px solid #ff4d6d;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Pacifico', cursive;
+  background: #ff69b4; /* Barbie pink */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  
-    .countdown {
-      font-weight: bold;
-      color: #ffc0cb;
-    }
-  
-    .actions { margin-top: 10px; }
-  
-    .actions button,
-    #toggleBtn {
-      margin-right: 10px;
-      background: rgba(187, 107, 217, 0.35); /* purple for edit */
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 8px 14px;
-      font-size: 15px;
-      font-family: 'Quicksand', sans-serif;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(187, 107, 217, 0.25);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+/* Doodle emojis background */
+.doodle {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.5;
+  animation: floatDoodle linear infinite;
+}
+@keyframes floatDoodle {
+  from { transform: translateY(110vh) rotate(0deg); }
+  to { transform: translateY(-10vh) rotate(360deg); }
+}
 
-    .actions button:hover,
-    #toggleBtn:hover {
-      background: rgba(187, 107, 217, 0.5);
-      box-shadow: 0 6px 20px rgba(187, 107, 217, 0.4);
-      transform: translateY(-1px);
-    }
+/* Card */
+.card {
+  background: rgba(255,182,193,0.3); /* transparent Barbie pink */
+  backdrop-filter: blur(14px);
+  padding: 50px 60px;
+  border-radius: 30px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  animation: popIn 0.8s ease;
+  z-index: 10;
+  max-width: 700px;
+  width: 92%;
+}
 
-    .actions button.delete {
-      background: rgba(255, 107, 129, 0.35); /* pinkish red */
-      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.25);
-    }
+@keyframes popIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 
-    .actions button.delete:hover {
-      background: rgba(255, 107, 129, 0.5);
-      box-shadow: 0 6px 20px rgba(255, 107, 129, 0.4);
-    }
-    #popup {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff4d6d;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 1000;
-      display: none;
-    }
-    #topBar {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-      width: calc(100% - 40px);
-      max-width: 1000px;
-      margin: auto;
-    }
+h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 8px #ffb6c1;
+  animation: wiggle 2s infinite;
+}
+@keyframes wiggle {
+  0%,100% { transform: rotate(0); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
+}
 
-    #userName {
-      font-size: 16px;
-      font-weight: 500;
-      color: #ffe9f1;
-      background: rgba(60, 60, 80, 0.6);
-      padding: 8px 12px;
-      border-radius: 8px;
-    }
-/* 
-    #logoutBtn {
-      font-size: 14px;
-      background: #ff4d6d;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: 'Quicksand', sans-serif;
-      color: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    } */
+p {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 6px #ffb6c1;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.5em;
+}
 
-  </style>
-  
+/* Buttons */
+button {
+  font-size: 1.3rem;
+  padding: 16px 40px;
+  margin: 10px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: 'Pacifico', cursive;
+}
+
+button:hover {
+  transform: scale(1.2);
+  box-shadow: 0 10px 20px rgba(255,192,203,0.6);
+}
+
+.yes {
+  background: linear-gradient(45deg,#ff1493,#ff69b4);
+  color: white;
+  animation: pulse 1.4s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,105,180,0.7); }
+  70% { box-shadow: 0 0 0 30px rgba(255,105,180,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,105,180,0); }
+}
+
+.no {
+  background: #aa336a;
+  color: white;
+}
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 12px;
+  height: 16px;
+  top: -10px;
+  animation: fall linear forwards;
+  z-index: 999;
+  border-radius: 4px;
+}
+@keyframes fall {
+  to { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+}
+
+/* Firework */
+.firework {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: explode 1s ease-out forwards;
+}
+@keyframes explode {
+  to {
+    box-shadow:
+      0 -90px #ff1493,
+      70px -70px #ff69b4,
+      90px 0 #ffb6c1,
+      70px 70px #ff69b4,
+      0 90px #ff1493,
+      -70px 70px #ffb6c1,
+      -90px 0 #ff69b4,
+      -70px -70px #ff1493;
+    opacity: 0;
+  }
+}
+
+/* Shake */
+.shake {
+  animation: shake 0.5s;
+}
+@keyframes shake {
+  0% { transform: translate(0); }
+  25% { transform: translate(-6px, 6px); }
+  50% { transform: translate(6px, -6px); }
+  75% { transform: translate(-6px, -6px); }
+  100% { transform: translate(0); }
+}
+
+/* Sparkle cursor */
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  font-size: 14px;
+  animation: sparkleFade 0.8s forwards;
+  z-index: 9999;
+  color: #ff69b4;
+}
+@keyframes sparkleFade {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.3) translateY(-20px); }
+}
+
+/* Image for No messages */
+#noImage {
+  max-width: 300px;
+  margin-top: 15px;
+  display: none;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+</style>
 </head>
 <body>
 
-  <div id="authContainer" style="animation: fadeInUp 1.5s ease;">
-    <h1>💖 Our Special Dates</h1>
-    <div id="authArea">
-      <button id="loginBtn">🔐 Login with Google</button>
-    </div>
+<!-- Background Music -->
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<button onclick="toggleMusic()" style="
+  position:absolute;
+  top:20px;
+  right:20px;
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  background:#ff69b4;
+  color:white;
+  cursor:pointer;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+">🎵 Music</button>
+
+<script>
+function toggleMusic() {
+  const music = document.getElementById("bgMusic");
+  if (music.paused) {
+    music.play();
+  } else {
+    music.pause();
+  }
+}
+
+/* Doodles */
+const doodles = ["💖","💘","💕","💞","💓","💋","✨","🌷","SHUBHI 💕"];
+for (let i = 0; i < 60; i++) {
+  const d = document.createElement("div");
+  d.className = "doodle";
+  d.innerText = doodles[Math.floor(Math.random()*doodles.length)];
+  d.style.left = Math.random()*100 + "vw";
+  d.style.fontSize = 18 + Math.random()*28 + "px";
+  d.style.animationDuration = 6 + Math.random()*7 + "s";
+  document.body.appendChild(d);
+}
+</script>
+
+<div class="card">
+  <h1>SHUBHI DIXIT 💖</h1>
+  <p>Will you be my Valentine?</p>
+  <img id="noImage" src="" alt="No image" />
+  <div id="buttons">
+    <button class="yes" onclick="sayYes()">Yes 💖</button>
+    <button class="no" onclick="sayNo()">No 😢</button>
   </div>
-  
+</div>
 
-  <div id="addControls" style="display: none;">
-    <button id="toggleBtn">➕ Add Special Date</button>
+<script>
+// No messages & images
+let noCount = 0;
+const noMessages = [
+  "WAIT WHAT 😳",
+  "Shubhi, think again 🥺✨",
+  "I’m literally fabulous though 💅",
+  "This hurts emotionally 💖",
+  "You cannot escape 😌",
+  "Okay now you’re just teasing 😘"
+];
 
-    <div class="form-section" id="addForm">
-      <input type="text" id="eventName" placeholder="Description (e.g. First Date)" />
-      <input type="date" id="eventDate" />
-      <select id="repeatType">
-        <option value="yearly">Repeat every year</option>
-        <option value="monthly">Repeat every month</option>
-      </select>
-      <button id="saveBtn">💾 Save</button>
-    </div>
-  </div>
+// Replace these with your actual image URLs
+// const noImages = [
+//   "https://i.ibb.co/XYZ1/image1.jpg",
+//   "https://i.ibb.co/XYZ2/image2.jpg",
+//   "https://i.ibb.co/XYZ3/image3.jpg",
+//   "https://i.ibb.co/XYZ4/image4.jpg",
+//   "https://i.ibb.co/XYZ5/image5.jpg",
+//   "https://i.ibb.co/XYZ6/image6.jpg"
+// ];
 
-  <div id="datesList"></div>
+function sayNo() {
+  noCount++;
+  document.getElementById("message").innerText = noMessages[(noCount-1)%noMessages.length];
+  // const img = document.getElementById("noImage");
+  // img.src = noImages[(noCount-1)%noImages.length];
+  // img.style.display = "block";
+  document.getElementById("buttons").innerHTML = `
+    <button class="yes" onclick="sayYes()">Okay, Yes 😌💖</button>
+    <button class="no" onclick="sayNo()">Still No 😤</button>
+  `;
+}
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import {
-      getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+function sayYes() {
+  // Prompt for message
+  const herMessage = prompt("Yay! 💖 Type a sweet message to send me:", "I said YES!");
+  if(herMessage){
+    const phone = "YOUR_PHONE_NUMBER"; // replace with your number
+    const subject = encodeURIComponent("Shubhi said YES! 💖");
+    const body = encodeURIComponent(`Shubhi Dixit said YES to the Valentine proposal!\n\nHer message:\n"${herMessage}"\n\n`);
+    window.location.href = `mailto:manthan.dalmia2@gmail.com?subject=${subject}&body=${body}`;
+  }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB5weQ8dmgdbsb4MdKC5n6WqIm1uwV8X5k",
-      authDomain: "special-dates-mannu-shubhuuu.firebaseapp.com",
-      projectId: "special-dates-mannu-shubhuuu",
-      storageBucket: "special-dates-mannu-shubhuuu.appspot.com",
-      messagingSenderId: "886831838183",
-      appId: "1:886831838183:web:4672538e24ba7613c5c342"
-    };
+  document.body.classList.add("shake");
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-    const eventsRef = collection(db, "specialDates");
+  for (let i=0;i<240;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.backgroundColor=`hsl(${Math.random()*360},100%,70%)`;
+    c.style.animationDuration=2+Math.random()*2+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
 
-    const loginBtn = document.getElementById("loginBtn");
-    const toggleBtn = document.getElementById("toggleBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const addForm = document.getElementById("addForm");
-    const popup = document.getElementById("popup");
-    const addControls = document.getElementById("addControls");
+  for(let i=0;i<6;i++){
+    setTimeout(()=>{
+      const f=document.createElement("div");
+      f.className="firework";
+      f.style.left=Math.random()*80+10+"vw";
+      f.style.top=Math.random()*60+10+"vh";
+      document.body.appendChild(f);
+      setTimeout(()=>f.remove(),1200);
+    }, i*300);
+  }
 
-    loginBtn.onclick = () => signInWithPopup(auth, provider);
+  setTimeout(()=>{
+    document.body.innerHTML = `
+      <div class="card">
+        <h1>💖 SHUBHI DIXIT SAID YES 💖</h1>
+        <p>This is officially the best Barbie day ever 🥰🎀</p>
+        <h2>Happy Valentine’s Day 🎉💘</h2>
+        <p>You are now fabulously stuck with me forever 😌</p>
+      </div>
+    `;
+  },1200);
+}
 
-    toggleBtn.onclick = () => {
-      addForm.style.display = addForm.style.display === "none" || addForm.style.display === "" ? "block" : "none";
-    };
+// Sparkle cursor
+const sparkles = ["✨","💖","💫","🌟","🎀"];
+document.addEventListener("mousemove", e=>{
+  const s=document.createElement("div");
+  s.className="sparkle";
+  s.innerText = sparkles[Math.floor(Math.random()*sparkles.length)];
+  s.style.left = e.clientX+"px";
+  s.style.top = e.clientY+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),800);
+});
+</script>
 
-    function showPopup(msg = "✅ Date saved!") {
-      popup.textContent = msg;
-      popup.style.display = "block";
-      setTimeout(() => {
-        popup.style.display = "none";
-      }, 2000);
-    }
-
-    async function addDate() {
-      const name = document.getElementById("eventName").value.trim();
-      const date = document.getElementById("eventDate").value;
-      const repeatType = document.getElementById("repeatType").value;
-      if (!name || !date) return alert("Please enter all fields");
-      try {
-        await addDoc(eventsRef, { name, date, repeatType, userId: auth.currentUser.uid });
-        document.getElementById("eventName").value = "";
-        document.getElementById("eventDate").value = "";
-        addForm.style.display = "none";
-        showPopup();
-      } catch (e) {
-        console.error("Add failed", e);
-        alert("Failed to add date.");
-      }
-    }
-    saveBtn.onclick = addDate;
-
-    function renderDates(dates) {
-      const list = document.getElementById("datesList");
-      list.innerHTML = "";
-      const today = new Date();
-
-      dates.forEach(event => {
-        const eventDate = new Date(event.date);
-        const repeatType = event.repeatType || "yearly";
-        let nextOccurrence;
-        let timePassedStr = "";
-        let timeRemainingStr = "";
-
-        if (repeatType === "yearly") {
-          nextOccurrence = new Date(today.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-          if (nextOccurrence < today) nextOccurrence.setFullYear(today.getFullYear() + 1);
-
-          const yearsPassed = today.getFullYear() - eventDate.getFullYear() - (today < nextOccurrence ? 1 : 0);
-          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
-          timePassedStr = `${yearsPassed} year${yearsPassed !== 1 ? "s" : ""}`;
-          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
-        } else {
-          nextOccurrence = new Date(today.getFullYear(), today.getMonth(), eventDate.getDate());
-          if (nextOccurrence < today) nextOccurrence.setMonth(nextOccurrence.getMonth() + 1);
-
-          let monthsPassed = (today.getFullYear() - eventDate.getFullYear()) * 12 + (today.getMonth() - eventDate.getMonth());
-          const fullDiffInDays = Math.floor((today - eventDate) / (1000 * 60 * 60 * 24));
-          let tempDate = new Date(eventDate);
-          tempDate.setMonth(tempDate.getMonth() + monthsPassed);
-          let daysPassed = Math.floor((today - tempDate) / (1000 * 60 * 60 * 24));
-          if (daysPassed < 0) {
-            // If overshot the current day (e.g., Feb to Mar), backtrack one month
-            tempDate.setMonth(tempDate.getMonth() - 1);
-            daysPassed = Math.floor((today - tempDate) / (1000 * 60 * 60 * 24));
-            monthsPassed--;
-          }
-          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
-          timePassedStr = `${monthsPassed} month${monthsPassed !== 1 ? "s" : ""}, ${daysPassed} day${daysPassed !== 1 ? "s" : ""}`;
-          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
-        }
-
-        const div = document.createElement("div");
-        div.className = "date-entry";
-        div.innerHTML = `
-          <h3 contenteditable="false">${event.name}</h3>
-          <p>📅 Original Date: ${eventDate.toDateString()}</p>
-          <p>🔁 Repeats: ${repeatType}</p>
-          <p>⏳ Passed: ${timePassedStr}</p>
-          <p class="countdown">🗓️ Next: ${timeRemainingStr} left (on ${nextOccurrence.toDateString()})</p>
-          <div class="actions">
-            <button class="edit">✏️ Edit</button>
-            <button class="delete">🗑️ Delete</button>
-          </div>
-        `;
-
-        div.querySelector(".edit").onclick = async () => {
-          const titleEl = div.querySelector("h3");
-          const isEditing = titleEl.isContentEditable;
-          if (!isEditing) {
-            titleEl.contentEditable = "true";
-            titleEl.focus();
-            div.querySelector(".edit").textContent = "💾 Save";
-          } else {
-            titleEl.contentEditable = "false";
-            div.querySelector(".edit").textContent = "✏️ Edit";
-            await updateDoc(doc(db, "specialDates", event.id), { name: titleEl.innerText });
-            showPopup("✅ Event updated!");
-          }
-        };
-
-        div.querySelector(".delete").onclick = async () => {
-          if (confirm("Delete this event?")) {
-            await deleteDoc(doc(db, "specialDates", event.id));
-            showPopup("🗑️ Event deleted!");
-          }
-        };
-
-        list.appendChild(div);
-      });
-    }
-// for a allowed list of email, only allow them to login
-    const allowedEmails = ["manthandalmia2@gmail.com", 
-                           "shubhi.schedule@gmail.com",
-                           "cs1200358@gmail.com"];
-    onAuthStateChanged(auth, (user) => {
-      const authArea = document.getElementById("authArea");
-      if (user && allowedEmails.includes(user.email)) {
-        authArea.innerHTML = `
-          <div id="topBar">
-            <div id="userName">👋 Hello, ${user.displayName}</div>
-            <button id="logoutBtn">🚪 Logout</button>
-          </div>
-        `;
-
-        document.getElementById("logoutBtn").onclick = () => signOut(auth);
-        addControls.style.display = "block";
-        // Ensure the form is hidden initially after login
-        addForm.style.display = "none";
-
-        const q = query(eventsRef, orderBy("date"));
-        onSnapshot(q, (snapshot) => {
-          // const userDates = snapshot.docs
-          //   .map(doc => ({ id: doc.id, ...doc.data() }))
-          //   .filter(event => event.userId === user.uid);
-          // renderDates(userDates);
-          const sharedDates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          renderDates(sharedDates);
-        });
-      } else {
-        if (user && !allowedEmails.includes(user.email)) {
-          // If user is logged in but not allowed, sign them out and show error
-          signOut(auth);
-          showPopup("❌ Access denied. Your email is not allowed.");
-        }
-        document.getElementById("datesList").innerHTML = "";
-        authArea.innerHTML = `<button id="loginBtn">🔐 Login with Google</button>`;
-        document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
-        addControls.style.display = "none";
-      }
-    });
-    // });
-  </script>
 </body>
 </html>
