@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shubhi, Be My Barbie Valentine 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Pacifico', cursive;
+  background: #ff69b4; /* Barbie pink */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Doodle emojis background */
+.doodle {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.5;
+  animation: floatDoodle linear infinite;
+}
+@keyframes floatDoodle {
+  from { transform: translateY(110vh) rotate(0deg); }
+  to { transform: translateY(-10vh) rotate(360deg); }
+}
+
+/* Card */
+.card {
+  background: rgba(255,182,193,0.3); /* transparent Barbie pink */
+  backdrop-filter: blur(14px);
+  padding: 50px 60px;
+  border-radius: 30px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  animation: popIn 0.8s ease;
+  z-index: 10;
+  max-width: 700px;
+  width: 92%;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 8px #ffb6c1;
+  animation: wiggle 2s infinite;
+}
+@keyframes wiggle {
+  0%,100% { transform: rotate(0); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
+}
+
+p {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 6px #ffb6c1;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.5em;
+}
+
+/* Buttons */
+button {
+  font-size: 1.3rem;
+  padding: 16px 40px;
+  margin: 10px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: 'Pacifico', cursive;
+}
+
+button:hover {
+  transform: scale(1.2);
+  box-shadow: 0 10px 20px rgba(255,192,203,0.6);
+}
+
+.yes {
+  background: linear-gradient(45deg,#ff1493,#ff69b4);
+  color: white;
+  animation: pulse 1.4s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,105,180,0.7); }
+  70% { box-shadow: 0 0 0 30px rgba(255,105,180,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,105,180,0); }
+}
+
+.no {
+  background: #aa336a;
+  color: white;
+}
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 12px;
+  height: 16px;
+  top: -10px;
+  animation: fall linear forwards;
+  z-index: 999;
+  border-radius: 4px;
+}
+@keyframes fall {
+  to { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+}
+
+/* Firework */
+.firework {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: explode 1s ease-out forwards;
+}
+@keyframes explode {
+  to {
+    box-shadow:
+      0 -90px #ff1493,
+      70px -70px #ff69b4,
+      90px 0 #ffb6c1,
+      70px 70px #ff69b4,
+      0 90px #ff1493,
+      -70px 70px #ffb6c1,
+      -90px 0 #ff69b4,
+      -70px -70px #ff1493;
+    opacity: 0;
+  }
+}
+
+/* Shake */
+.shake {
+  animation: shake 0.5s;
+}
+@keyframes shake {
+  0% { transform: translate(0); }
+  25% { transform: translate(-6px, 6px); }
+  50% { transform: translate(6px, -6px); }
+  75% { transform: translate(-6px, -6px); }
+  100% { transform: translate(0); }
+}
+
+/* Sparkle cursor */
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  font-size: 14px;
+  animation: sparkleFade 0.8s forwards;
+  z-index: 9999;
+  color: #ff69b4;
+}
+@keyframes sparkleFade {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.3) translateY(-20px); }
+}
+
+/* Image for No messages */
+#noImage {
+  max-width: 300px;
+  margin-top: 15px;
+  display: none;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+
+<!-- Background Music -->
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<button onclick="toggleMusic()" style="
+  position:absolute;
+  top:20px;
+  right:20px;
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  background:#ff69b4;
+  color:white;
+  cursor:pointer;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+">🎵 Music</button>
+
+<script>
+function toggleMusic() {
+  const music = document.getElementById("bgMusic");
+  if (music.paused) {
+    music.play();
+  } else {
+    music.pause();
+  }
+}
+
+/* Doodles */
+const doodles = ["💖","💘","💕","💞","💓","💋","✨","🌷","SHUBHI 💕"];
+for (let i = 0; i < 60; i++) {
+  const d = document.createElement("div");
+  d.className = "doodle";
+  d.innerText = doodles[Math.floor(Math.random()*doodles.length)];
+  d.style.left = Math.random()*100 + "vw";
+  d.style.fontSize = 18 + Math.random()*28 + "px";
+  d.style.animationDuration = 6 + Math.random()*7 + "s";
+  document.body.appendChild(d);
+}
+</script>
+
+<div class="card">
+  <h1>SHUBHI DIXIT 💖</h1>
+  <p>Will you be my Valentine?</p>
+  <img id="noImage" src="" alt="No image" />
+  <div id="buttons">
+    <button class="yes" onclick="sayYes()">Yes 💖</button>
+    <button class="no" onclick="sayNo()">No 😢</button>
+  </div>
+</div>
+
+<script>
+// No messages & images
+let noCount = 0;
+const noMessages = [
+  "WAIT WHAT 😳",
+  "Shubhi, think again 🥺✨",
+  "I’m literally fabulous though 💅",
+  "This hurts emotionally 💖",
+  "You cannot escape 😌",
+  "Okay now you’re just teasing 😘"
+];
+
+// Replace these with your actual image URLs
+// const noImages = [
+//   "https://i.ibb.co/XYZ1/image1.jpg",
+//   "https://i.ibb.co/XYZ2/image2.jpg",
+//   "https://i.ibb.co/XYZ3/image3.jpg",
+//   "https://i.ibb.co/XYZ4/image4.jpg",
+//   "https://i.ibb.co/XYZ5/image5.jpg",
+//   "https://i.ibb.co/XYZ6/image6.jpg"
+// ];
+
+function sayNo() {
+  noCount++;
+  document.getElementById("message").innerText = noMessages[(noCount-1)%noMessages.length];
+  // const img = document.getElementById("noImage");
+  // img.src = noImages[(noCount-1)%noImages.length];
+  // img.style.display = "block";
+  document.getElementById("buttons").innerHTML = `
+    <button class="yes" onclick="sayYes()">Okay, Yes 😌💖</button>
+    <button class="no" onclick="sayNo()">Still No 😤</button>
+  `;
+}
+
+function sayYes() {
+  // Prompt for message
+  const herMessage = prompt("Yay! 💖 Type a sweet message to send me:", "I said YES!");
+  if(herMessage){
+    const phone = "YOUR_PHONE_NUMBER"; // replace with your number
+    const subject = encodeURIComponent("Shubhi said YES! 💖");
+    const body = encodeURIComponent(`Shubhi Dixit said YES to the Valentine proposal!\n\nHer message:\n"${herMessage}"\n\n`);
+    window.location.href = `mailto:manthan.dalmia2@gmail.com?subject=${subject}&body=${body}`;
+  }
+
+  document.body.classList.add("shake");
+
+  for (let i=0;i<240;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.backgroundColor=`hsl(${Math.random()*360},100%,70%)`;
+    c.style.animationDuration=2+Math.random()*2+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
+
+  for(let i=0;i<6;i++){
+    setTimeout(()=>{
+      const f=document.createElement("div");
+      f.className="firework";
+      f.style.left=Math.random()*80+10+"vw";
+      f.style.top=Math.random()*60+10+"vh";
+      document.body.appendChild(f);
+      setTimeout(()=>f.remove(),1200);
+    }, i*300);
+  }
+
+  setTimeout(()=>{
+    document.body.innerHTML = `
+      <div class="card">
+        <h1>💖 SHUBHI DIXIT SAID YES 💖</h1>
+        <p>This is officially the best Barbie day ever 🥰🎀</p>
+        <h2>Happy Valentine’s Day 🎉💘</h2>
+        <p>You are now fabulously stuck with me forever 😌</p>
+      </div>
+    `;
+  },1200);
+}
+
+// Sparkle cursor
+const sparkles = ["✨","💖","💫","🌟","🎀"];
+document.addEventListener("mousemove", e=>{
+  const s=document.createElement("div");
+  s.className="sparkle";
+  s.innerText = sparkles[Math.floor(Math.random()*sparkles.length)];
+  s.style.left = e.clientX+"px";
+  s.style.top = e.clientY+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),800);
+});
+</script>
+
+</body>
+</html>
