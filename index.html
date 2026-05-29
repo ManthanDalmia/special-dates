@@ -185,6 +185,86 @@
         .audio-player:hover {
             opacity: 1;
         }
+        /* Cute Custom Music Jukebox Widget */
+.jukebox-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5;
+            background: #ffffff;
+            border: 3px solid #2d3436;
+            border-radius: 20px;
+            padding: 10px 20px 28px 20px;
+            box-shadow: 4px 4px 0px #2d3436;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .jukebox-panel.reveal-ui {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .jukebox-title {
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .song-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .song-btn {
+            background: #fff5f5;
+            border: 2px solid #2d3436;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .song-btn:hover {
+            transform: scale(1.1);
+            background: #ffd1d1;
+        }
+
+        .song-btn.active {
+            background: #ff7675;
+            animation: pulse 1.5s infinite;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .song-btn span {
+            font-size: 0.75rem;
+            position: absolute;
+            bottom: -22px; 
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-family: 'Comfortaa', sans-serif;
+            color: #2d3436;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -205,7 +285,18 @@
     </div>
 
     <!-- The Audio Element -->
-    <audio id="bg-music" src="music.mp3" loop class="audio-player" controls></audio>
+    <!-- Audio Elements for both files -->
+    <audio id="bg-music-1" src="music.mp3" loop></audio>
+    <audio id="bg-music-2" src="selfless.mp3" loop></audio>
+
+    <!-- Custom Floating Jukebox panel -->
+    <div class="jukebox-panel" id="jukebox">
+        <div class="jukebox-title">Our Playlist 🎧</div>
+        <div class="song-options">
+            <button class="song-btn active" id="btn-track1" onclick="switchTrack(1)">🪬<span>For us</span></button>
+            <button class="song-btn" id="btn-track2" onclick="switchTrack(2)">💌<span>For you</span></button>
+        </div>
+    </div>
 
     <!-- The Letter Paper -->
     <div class="letter-container" id="letter">
@@ -318,7 +409,30 @@ Manju Nath Upadhay
     </div>
 
     <script>
-        // Generate random hand-drawn floating hearts for background
+        // 1. Track states and elements
+        const track1 = document.getElementById('bg-music-1');
+        const track2 = document.getElementById('bg-music-2');
+        const btn1 = document.getElementById('btn-track1');
+        const btn2 = document.getElementById('btn-track2');
+
+        // 2. Track toggling core function
+        function switchTrack(trackNum) {
+            if (trackNum === 1) {
+                track2.pause();
+                track2.currentTime = 0; // Rewind track 2
+                track1.play().catch(e => console.log("Playback interaction error"));
+                btn1.classList.add('active');
+                btn2.classList.remove('active');
+            } else {
+                track1.pause();
+                track1.currentTime = 0; // Rewind track 1
+                track2.play().catch(e => console.log("Playback interaction error"));
+                btn2.classList.add('active');
+                btn1.classList.remove('active');
+            }
+        }
+
+        // 3. Keep your background floating hearts setup running
         function createBackgroundDoodles() {
             const canvas = document.getElementById('doodle-canvas');
             const colors = ['#ff7675', '#fd79a8', '#fab1a0', '#ffb8b8'];
@@ -328,40 +442,35 @@ Manju Nath Upadhay
                 heart.setAttribute("class", "floating-heart");
                 heart.setAttribute("viewBox", "0 0 24 24");
                 
-                // Randomize positions and speed
                 heart.style.left = Math.random() * 100 + 'vw';
                 heart.style.top = Math.random() * 100 + 'vh';
                 heart.style.width = (Math.random() * 20 + 15) + 'px';
                 heart.style.animationDuration = (Math.random() * 4 + 5) + 's';
                 heart.style.animationDelay = (Math.random() * -5) + 's';
                 heart.style.fill = colors[Math.floor(Math.random() * colors.length)];
-                
-                // Hand drawn heart shape path
                 heart.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
-                
                 canvas.appendChild(heart);
             }
         }
-
-        // Initialize background on start
         window.addEventListener('DOMContentLoaded', createBackgroundDoodles);
 
-        // Transition logic and music play trigger
+        // 4. Modified transition logic triggered by clicking "Open"
         function openLetter() {
             const intro = document.getElementById('intro-screen');
             const letter = document.getElementById('letter');
-            const music = document.getElementById('bg-music');
+            const jukebox = document.getElementById('jukebox');
 
-            // Play background music
-            music.play().catch(err => console.log("Audio autoplay restriction bypassed."));
+            // Start playing track 1 immediately on open
+            switchTrack(1);
 
             // Fade out intro screen gently
             intro.style.opacity = '0';
             intro.style.visibility = 'hidden';
 
-            // Scale and bounce letter up smoothly
+            // Scale and bounce letter / jukebox up smoothly
             setTimeout(() => {
                 letter.classList.add('reveal');
+                jukebox.classList.add('reveal-ui');
             }, 300);
         }
     </script>
