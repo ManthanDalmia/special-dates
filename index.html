@@ -1,443 +1,369 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Our Special Dates</title>
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background-color: #2e2b3f;
-      background-image: url('https://media.istockphoto.com/id/2196296234/vector/seamless-hearts-doodles-and-drawings-wallpaper-background.jpg?s=612x612&w=0&k=20&c=IAomLnRguQcPGQjvkQ4z-o57NX3olS5DMWzag61DtIQ=');
-      background-repeat: repeat;
-      background-size: cover;
-      background-attachment: fixed;
-      color: #f8d1d7;
-      padding: 20px;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-  
-    h1 {
-      color: #ff99aa;
-      text-align: center;
-      font-size: 3rem;
-      animation: heartbeat 2.5s infinite ease-in-out, glow 2s ease-in-out infinite alternate;
-      margin-bottom: 40px;
-      font-family: 'Patrick Hand', cursive;
-    }
-  
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
-  
-    @keyframes glow {
-      0% {
-        text-shadow: 0 0 2px #ff99aa, 0 0 4px #ff6b81;
-      }
-      100% {
-        text-shadow: 0 0 4px #ff99aa, 0 0 6px #ff6b81;
-      }
-    }
-  
-    #authArea {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  
-/* Shared glassy pink button style */
-    button,
-    #logoutBtn,
-    #loginBtn {
-      background: rgba(255, 105, 135, 0.35); /* glassy pink */
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 10px 18px;
-      font-size: 16px;
-      font-family: 'Quicksand', sans-serif;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(255, 105, 135, 0.25);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 1st Anniversary Shubhuuu!</title>
+    
+    <!-- Cute & Handwritten Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    /* Hover effect */
-    button:hover,
-    #logoutBtn:hover,
-    #loginBtn:hover {
-      background: rgba(255, 105, 135, 0.5);
-      box-shadow: 0 6px 20px rgba(255, 105, 135, 0.4);
-      transform: translateY(-1px);
-    }
+        body {
+            background-color: #fff5f5;
+            background-image: radial-gradient(#ffd1d1 1px, transparent 1px), radial-gradient(#ffd1d1 1px, #fff5f5 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            font-family: 'Comfortaa', cursive;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-  
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  
-    button {
-      background-color: #ff4d6d;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      font-size: 16px;
-      margin: 10px 0;
-      border-radius: 5px;
-      cursor: pointer;
-      font-family: 'Quicksand', sans-serif;
-    }
-  
-    button:hover { background-color: #ff3366; }
-  
-    .form-section {
-      display: none;
-      margin-bottom: 20px;
-      background: #3c3c4a;
-      padding: 15px;
-      border-radius: 8px;
-    }
-  
-    input[type="text"], input[type="date"], select {
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-      border: 1px solid #888;
-      border-radius: 4px;
-      background: #262635;
-      color: #ffe9f1;
-    }
-  
-    .date-entry {
-      background: rgba(255, 255, 255, 0.08);
-      border-left: 4px solid #ff4d6d;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        /* Animated Doodle Background Elements */
+        .doodle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
 
-  
-    .countdown {
-      font-weight: bold;
-      color: #ffc0cb;
-    }
-  
-    .actions { margin-top: 10px; }
-  
-    .actions button,
-    #toggleBtn {
-      margin-right: 10px;
-      background: rgba(187, 107, 217, 0.35); /* purple for edit */
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 8px 14px;
-      font-size: 15px;
-      font-family: 'Quicksand', sans-serif;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(187, 107, 217, 0.25);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+        .floating-heart {
+            position: absolute;
+            fill: #ff7675;
+            opacity: 0.3;
+            animation: float Up 6s infinite ease-in-out;
+        }
 
-    .actions button:hover,
-    #toggleBtn:hover {
-      background: rgba(187, 107, 217, 0.5);
-      box-shadow: 0 6px 20px rgba(187, 107, 217, 0.4);
-      transform: translateY(-1px);
-    }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
 
-    .actions button.delete {
-      background: rgba(255, 107, 129, 0.35); /* pinkish red */
-      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.25);
-    }
+        /* Intro Screen */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffe8e8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+        }
 
-    .actions button.delete:hover {
-      background: rgba(255, 107, 129, 0.5);
-      box-shadow: 0 6px 20px rgba(255, 107, 129, 0.4);
-    }
-    #popup {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff4d6d;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 1000;
-      display: none;
-    }
-    #topBar {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-      width: calc(100% - 40px);
-      max-width: 1000px;
-      margin: auto;
-    }
+        .envelope-doodle {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite ease-in-out;
+        }
 
-    #userName {
-      font-size: 16px;
-      font-weight: 500;
-      color: #ffe9f1;
-      background: rgba(60, 60, 80, 0.6);
-      padding: 8px 12px;
-      border-radius: 8px;
-    }
-/* 
-    #logoutBtn {
-      font-size: 14px;
-      background: #ff4d6d;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: 'Quicksand', sans-serif;
-      color: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    } */
+        .open-btn {
+            background-color: #ff7675;
+            color: white;
+            border: 3px solid #2d3436;
+            padding: 15px 45px;
+            font-size: 1.8rem;
+            font-family: 'Caveat', cursive;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #2d3436;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-  </style>
-  
+        .open-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #2d3436;
+            background-color: #ff6b6b;
+        }
+
+        .open-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #2d3436;
+        }
+
+        .intro-text {
+            font-family: 'Caveat', cursive;
+            font-size: 2.8rem;
+            color: #2d3436;
+            margin-bottom: 25px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* Main Letter Container */
+        .letter-container {
+            max-width: 700px;
+            width: 90%;
+            background: #ffffff;
+            padding: 50px 35px;
+            border-radius: 30px;
+            border: 4px solid #2d3436;
+            box-shadow: 8px 8px 0px #ffd1d1, 12px 12px 0px #2d3436;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: scale(0.9) translateY(40px);
+            transition: opacity 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin: 50px 0;
+        }
+
+        .letter-container.reveal {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Graphic Elements Content Inner */
+        .header-doodles {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sparkle-icon {
+            width: 40px;
+            height: 40px;
+            fill: #fab1a0;
+        }
+
+        /* Letter content styles */
+        .letter-text {
+            color: #2d3436;
+            font-family: 'Caveat', cursive;
+            font-size: 1.7rem;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Keeps line breaks and spaces perfectly */
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .cute-divider {
+            display: block;
+            margin: 30px auto;
+            width: 60%;
+            height: auto;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        /* Mini audio player at bottom right */
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            border-radius: 30px;
+            border: 2px solid #2d3436;
+        }
+        .audio-player:hover {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="authContainer" style="animation: fadeInUp 1.5s ease;">
-    <h1>💖 Our Special Dates</h1>
-    <div id="authArea">
-      <button id="loginBtn">🔐 Login with Google</button>
+    <!-- Animated Doodles Canvas -->
+    <div class="doodle-bg" id="doodle-canvas"></div>
+
+    <!-- Intro / Opening Screen -->
+    <div id="intro-screen">
+        <!-- Cute Hand-Drawn Envelope SVG -->
+        <svg class="envelope-doodle" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+            <path d="M12 17c.5 0 1-.2 1.4-.6l.1-.1 1.5-1.8c.3-.4.3-1 0-1.4l0 0c-.4-.4-1-.4-1.4 0l-1.6 1.9-1.6-1.9c-.4-.4-1-.4-1.4 0l0 0c-.3.4-.3 1 0 1.4l1.5 1.8.1.1c.4.4.9.6 1.4.6z" fill="#ff7675" stroke="none"></path>
+        </svg>
+        <h1 class="intro-text">Oiii Shubhuuu, idhar dekh ke baat karo! ❤️<br><span style="font-size: 1.8rem; color:#636e72;"></span></h1>
+        <button class="open-btn" onclick="openLetter()">🫀🫀🫀</button>
     </div>
-  </div>
-  
 
-  <div id="addControls" style="display: none;">
-    <button id="toggleBtn">➕ Add Special Date</button>
+    <!-- The Audio Element -->
+    <audio id="bg-music" src="music.mp3" loop class="audio-player" controls></audio>
 
-    <div class="form-section" id="addForm">
-      <input type="text" id="eventName" placeholder="Description (e.g. First Date)" />
-      <input type="date" id="eventDate" />
-      <select id="repeatType">
-        <option value="yearly">Repeat every year</option>
-        <option value="monthly">Repeat every month</option>
-      </select>
-      <button id="saveBtn">💾 Save</button>
+    <!-- The Letter Paper -->
+    <div class="letter-container" id="letter">
+        
+        <!-- Header Sparkle Doodles -->
+        <div class="header-doodles">
+            <svg class="sparkle-icon" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+            <span style="font-size: 2.5rem;">💌</span>
+            <svg class="sparkle-icon" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+        </div>
+        
+        <!-- EXACT UNCHANGED TEXT BOX -->
+        <div class="letter-text">Namah Parvati Pataye Hara Hara Mahadeva!
+Ganpati Baba Morya!
+Jai Bajranbali
+
+( Thank you universe and Gauri shankar mandir ke sabhiiii bhagwaan ko to make me write this )
+
+For my Right one, Right time&nbsp;
+
+Happy 1st year Anniversary love of my life Shubhuuu Dixit. As the 30th of every month passed my my love for you, my likeness for you, my respect for you, my happiness, my believe on you everything good has increased. Everything. It has been a crazyyyyy year, happiest year. Shubhuuu i love you soo sooo muchhh and i admire and value every second of time we had spent and we will. You make me want to be a better men for myself for us and in general. You have given me so muchhh love that this boy Rama couldn’t have imagined that this is actually real and actually honest.&nbsp;
+You have infused in my life, in my days, in my work, in my routine. I like sharing life w you. I like knowing you are sharing your life w me.&nbsp;
+Now that you are leaving delhi i so badly want to leave everything aside and just spend all the remaining days here w you. Go every place you like, we like, i like w you. Eat every things that you like without bothering about the calories. Jump as high i can on the trampoline. Idk i feel sad thinking this change. But at the same time knowing that in all of this change you will be there w me, you will be my constant. We will evolve and we and our love won’t change…&nbsp;
+Shubhuuu in this whole 1 year i have seen you getting things done aside of all the challenges, keeping yourself tight w ups and downs, staying there for me. I am&nbsp;&nbsp;so sooo thankful for every love you have given me, accepting all the love i have given you, spending weekends weekdays 30th everything w me, sharing your daal chawaal bites w me, coming to ggn for me, stepping out of your comfort zones for me, being the voice in our misunderstandings when i fell weak… and many more
+I love us, I love all of these to the deepest tissue of my heart.&nbsp;
+I wish there was a way to know you're in the good old days before you've actually left them…
+Remembering and sharing w you some of our / my good old days so that we can find the better ones together in coming days and challenges… ( i know we will be alright )&nbsp;
+Our weekends lazy mornings
+Dosa, breadroll making sessions
+Aloo ki bouri godi-s
+Calling chubhuu golu molu shonna baby sweetheart darling …
+Getting called as pookxer, manju, mannu pannu, baby…
+Making Cakes
+Our dinner, lunch breakfast dates
+GUPCHUPPPPPPPPP w you&nbsp;
+showing up w flowers ( sorry there hasn’t been any lately :( You will have your flowers soon my love )
+ordering from Khadak Singh in our intial days
+Going and sharing my mandir w you
+Sharing my closet w you
+Washing your clothes w mine
+Sharing our childhood stories making me want you more
+you dancing for me on every song plays on TV
+Our sexy makeout sessions kikikki
+Going movies w you, watching movies w you, watching shows for you
+sharing songs w you, I Love your movies and songs recommendations… To this date i like I deny me and many more.&nbsp;
+Watching good place w you
+Going on shopping date w you ( hope we do this soon in ambd )&nbsp;
+sharing things we see in daily life on a video call
+our tradition of monthi-versarry mails
+sharing memes and making me them part of daily conversations hehe ( you remember that ‘w mumma’ or ‘idhar dekh ke baat karo’ thing ? )
+Cuddly nights in Delhi’s winter
+seeing you in my GAP jacket ( You look dapper in that )
+Sending Kicchis in Angel Numbers
+TIme we spent in banaras ( hope we get to have that very soon :evileye)
+Our navratri date night ( I LOVE IT )
+Riding in Vande bharat w you
+TIMEZONE w you
+sharing a similar uniqlo tshirt&nbsp;
+writing letters for you or getting desserts for you
+our late night walkings in phase 1
+Our badminton date ( lets try to have that before you go :( , katti jaarhi ho chodke )
+Our Cybercity lunch date in the middle of office hehehe I loved it
+our NGMA, KNMA date and how you kept saying “chee ye bekar hai” and we ended up drawing mini paintings outside LMAO
+ordering first food order for me
+Gifting my first lego, First htowheels and many more I love you so muchhh
+Our Magic show night was aaamaammaaazinggggg
+watching episodes of the office w you , hey listen i miss that, can we watch some of the episodes i liked of the show together now? please?
+Selecting my diwali kurta hehehe, going cc for light shopping, that was crazy we went there twice back to back hahaha
+You taking embarassing photos of me
+We discovering Havemore
+Sharing my diwali w you, you sharing your diwali w me, I love it.&nbsp;
+doing mehendi on your hands..
+Our jalebi time in this one year was crazy
+Celebrating your birthday, i loved being there w you on your birthday
+THANKKKK YOU SO MUCHH for giving me the best birthday ever, Best gifts ever, YOU ARE THE ABSOLUTE BEST SHUBHUUUU
+the custom hardcover kite runner, lego, letter, frame, drinking game i loved each of them to my heart…
+celebrating christman w you, exchanging presents on christmas w you
+sharing stickers w you has become idk just necessary hehehehe I see you in all stickers you send me
+The giraffe on my office desk reminds me of you and how lucky i am having you as my bestfriend and girlfriend and golu
+OUR JAIPURRRR TRIIPPPPPP was lovelyyyyyy. I hope and i really pray we do more trips in coming time and explore many places..
+thank youu sooo much for inviting me in your fest and showing your college which has given you a lot and you have given a lot back too.&nbsp;
+Sharing my bali trips w you, helping me w shopping for it i liked the prev day before going to bali i spent w you&nbsp;
+thanks youuuu so muchhh for showing up, caring for me, being there w my not-good-health days ( ykwim )&nbsp;
+sharing screen care routine w you and taking selfies w mask like aliens hahahaa
+painting w me, making a couple of pinky starts on my paintings which will be immortalised going forwards
+makings legos w you, puzzles w you, having house parties w you involved i love that,&nbsp;
+sharing exam schedules, exam days, result days. I am proud of you shubhuuu. my girl.&nbsp;
+
+Shubhuuu this list can go forever and will keep going. I remeber every moment we spent together closely everything we do for eachother i do remeber, that’s what keep me going and makes me love you more. ANYDAY anytime i am happy to answer about any of the things i menitoned above in details for you, given that you are in my godi and giving me kicchis in between,&nbsp;
+
+Shubhuuu i feel sooo sooooo comfortable when you are around or just from the fact that you got me. on my bad days you make me feel lighter, better.&nbsp;
+Shubuhuu i am scared how we are going to handle being apart because we did so good staying close, you made me sooooo happy, the happiest guy here in this universe by being here physically mentally emotionally in everyway possible. And that ’s the beauty of it, i am excited for our coming forward life as individual and as a couple. I can’t wait to hear MICA stories from you…
+Listen this carefuly, oiii idhar dekh ke baat karo, I got you, i got you tight. In ambd, in vns, in delhi everywhere i got you okay? You ever find youself in any problem or things are not making sense you know right i m there w you? Just know it. I will be there for you as bigger brother you didn’t have, as your best friend, as your boyfriend as the same mannu pooxer manju.&nbsp;
+( i have gottne myself teary eyes writing all of these, Thank you for giving happy tear moments in life:) )&nbsp;
+
+I love you shubhuuu. I love you w my everything.
+
+All the best of luck my love.
+
+yours&nbsp;
+Manju Nath Upadhay
+</div>
+        <!-- END OF TEXT BOX -->
+
+        <!-- Bottom Doodle Divider -->
+        <svg class="cute-divider" viewBox="0 0 100 10" fill="none" stroke="#2d3436" stroke-width="1.5" stroke-linecap="round">
+            <path d="M10 5 C 20 2, 25 8, 30 5 C 35 2, 40 8, 45 5 C 50 2, 55 8, 60 5 C 65 2, 70 8, 75 5 C 85 2, 90 8, 95 5" stroke-dasharray="2 2"/>
+        </svg>
+        <div style="text-align: center; font-size: 2rem;">🪬💕💋</div>
     </div>
-  </div>
 
-  <div id="datesList"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import {
-      getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyB5weQ8dmgdbsb4MdKC5n6WqIm1uwV8X5k",
-      authDomain: "special-dates-mannu-shubhuuu.firebaseapp.com",
-      projectId: "special-dates-mannu-shubhuuu",
-      storageBucket: "special-dates-mannu-shubhuuu.appspot.com",
-      messagingSenderId: "886831838183",
-      appId: "1:886831838183:web:4672538e24ba7613c5c342"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-    const eventsRef = collection(db, "specialDates");
-
-    const loginBtn = document.getElementById("loginBtn");
-    const toggleBtn = document.getElementById("toggleBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const addForm = document.getElementById("addForm");
-    const popup = document.getElementById("popup");
-    const addControls = document.getElementById("addControls");
-
-    loginBtn.onclick = () => signInWithPopup(auth, provider);
-
-    toggleBtn.onclick = () => {
-      addForm.style.display = addForm.style.display === "none" || addForm.style.display === "" ? "block" : "none";
-    };
-
-    function showPopup(msg = "✅ Date saved!") {
-      popup.textContent = msg;
-      popup.style.display = "block";
-      setTimeout(() => {
-        popup.style.display = "none";
-      }, 2000);
-    }
-
-    async function addDate() {
-      const name = document.getElementById("eventName").value.trim();
-      const date = document.getElementById("eventDate").value;
-      const repeatType = document.getElementById("repeatType").value;
-      if (!name || !date) return alert("Please enter all fields");
-      try {
-        await addDoc(eventsRef, { name, date, repeatType, userId: auth.currentUser.uid });
-        document.getElementById("eventName").value = "";
-        document.getElementById("eventDate").value = "";
-        addForm.style.display = "none";
-        showPopup();
-      } catch (e) {
-        console.error("Add failed", e);
-        alert("Failed to add date.");
-      }
-    }
-    saveBtn.onclick = addDate;
-
-    function renderDates(dates) {
-      const list = document.getElementById("datesList");
-      list.innerHTML = "";
-      const today = new Date();
-
-      dates.forEach(event => {
-        const eventDate = new Date(event.date);
-        const repeatType = event.repeatType || "yearly";
-        let nextOccurrence;
-        let timePassedStr = "";
-        let timeRemainingStr = "";
-
-        if (repeatType === "yearly") {
-          nextOccurrence = new Date(today.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-          if (nextOccurrence < today) nextOccurrence.setFullYear(today.getFullYear() + 1);
-
-          const yearsPassed = today.getFullYear() - eventDate.getFullYear() - (today < nextOccurrence ? 1 : 0);
-          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
-          timePassedStr = `${yearsPassed} year${yearsPassed !== 1 ? "s" : ""}`;
-          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
-        } else {
-          nextOccurrence = new Date(today.getFullYear(), today.getMonth(), eventDate.getDate());
-          if (nextOccurrence < today) nextOccurrence.setMonth(nextOccurrence.getMonth() + 1);
-
-          let monthsPassed = (today.getFullYear() - eventDate.getFullYear()) * 12 + (today.getMonth() - eventDate.getMonth());
-          const fullDiffInDays = Math.floor((today - eventDate) / (1000 * 60 * 60 * 24));
-          let tempDate = new Date(eventDate);
-          tempDate.setMonth(tempDate.getMonth() + monthsPassed);
-          let daysPassed = Math.floor((today - tempDate) / (1000 * 60 * 60 * 24));
-          if (daysPassed < 0) {
-            // If overshot the current day (e.g., Feb to Mar), backtrack one month
-            tempDate.setMonth(tempDate.getMonth() - 1);
-            daysPassed = Math.floor((today - tempDate) / (1000 * 60 * 60 * 24));
-            monthsPassed--;
-          }
-          const daysRemaining = Math.ceil((nextOccurrence - today) / (1000 * 60 * 60 * 24));
-          timePassedStr = `${monthsPassed} month${monthsPassed !== 1 ? "s" : ""}, ${daysPassed} day${daysPassed !== 1 ? "s" : ""}`;
-          timeRemainingStr = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}`;
+    <script>
+        // Generate random hand-drawn floating hearts for background
+        function createBackgroundDoodles() {
+            const canvas = document.getElementById('doodle-canvas');
+            const colors = ['#ff7675', '#fd79a8', '#fab1a0', '#ffb8b8'];
+            
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                heart.setAttribute("class", "floating-heart");
+                heart.setAttribute("viewBox", "0 0 24 24");
+                
+                // Randomize positions and speed
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heart.style.width = (Math.random() * 20 + 15) + 'px';
+                heart.style.animationDuration = (Math.random() * 4 + 5) + 's';
+                heart.style.animationDelay = (Math.random() * -5) + 's';
+                heart.style.fill = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Hand drawn heart shape path
+                heart.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
+                
+                canvas.appendChild(heart);
+            }
         }
 
-        const div = document.createElement("div");
-        div.className = "date-entry";
-        div.innerHTML = `
-          <h3 contenteditable="false">${event.name}</h3>
-          <p>📅 Original Date: ${eventDate.toDateString()}</p>
-          <p>🔁 Repeats: ${repeatType}</p>
-          <p>⏳ Passed: ${timePassedStr}</p>
-          <p class="countdown">🗓️ Next: ${timeRemainingStr} left (on ${nextOccurrence.toDateString()})</p>
-          <div class="actions">
-            <button class="edit">✏️ Edit</button>
-            <button class="delete">🗑️ Delete</button>
-          </div>
-        `;
+        // Initialize background on start
+        window.addEventListener('DOMContentLoaded', createBackgroundDoodles);
 
-        div.querySelector(".edit").onclick = async () => {
-          const titleEl = div.querySelector("h3");
-          const isEditing = titleEl.isContentEditable;
-          if (!isEditing) {
-            titleEl.contentEditable = "true";
-            titleEl.focus();
-            div.querySelector(".edit").textContent = "💾 Save";
-          } else {
-            titleEl.contentEditable = "false";
-            div.querySelector(".edit").textContent = "✏️ Edit";
-            await updateDoc(doc(db, "specialDates", event.id), { name: titleEl.innerText });
-            showPopup("✅ Event updated!");
-          }
-        };
+        // Transition logic and music play trigger
+        function openLetter() {
+            const intro = document.getElementById('intro-screen');
+            const letter = document.getElementById('letter');
+            const music = document.getElementById('bg-music');
 
-        div.querySelector(".delete").onclick = async () => {
-          if (confirm("Delete this event?")) {
-            await deleteDoc(doc(db, "specialDates", event.id));
-            showPopup("🗑️ Event deleted!");
-          }
-        };
+            // Play background music
+            music.play().catch(err => console.log("Audio autoplay restriction bypassed."));
 
-        list.appendChild(div);
-      });
-    }
-// for a allowed list of email, only allow them to login
-    const allowedEmails = ["manthandalmia2@gmail.com", 
-                           "shubhi.schedule@gmail.com",
-                           "cs1200358@gmail.com"];
-    onAuthStateChanged(auth, (user) => {
-      const authArea = document.getElementById("authArea");
-      if (user && allowedEmails.includes(user.email)) {
-        authArea.innerHTML = `
-          <div id="topBar">
-            <div id="userName">👋 Hello, ${user.displayName}</div>
-            <button id="logoutBtn">🚪 Logout</button>
-          </div>
-        `;
+            // Fade out intro screen gently
+            intro.style.opacity = '0';
+            intro.style.visibility = 'hidden';
 
-        document.getElementById("logoutBtn").onclick = () => signOut(auth);
-        addControls.style.display = "block";
-        // Ensure the form is hidden initially after login
-        addForm.style.display = "none";
-
-        const q = query(eventsRef, orderBy("date"));
-        onSnapshot(q, (snapshot) => {
-          // const userDates = snapshot.docs
-          //   .map(doc => ({ id: doc.id, ...doc.data() }))
-          //   .filter(event => event.userId === user.uid);
-          // renderDates(userDates);
-          const sharedDates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          renderDates(sharedDates);
-        });
-      } else {
-        if (user && !allowedEmails.includes(user.email)) {
-          // If user is logged in but not allowed, sign them out and show error
-          signOut(auth);
-          showPopup("❌ Access denied. Your email is not allowed.");
+            // Scale and bounce letter up smoothly
+            setTimeout(() => {
+                letter.classList.add('reveal');
+            }, 300);
         }
-        document.getElementById("datesList").innerHTML = "";
-        authArea.innerHTML = `<button id="loginBtn">🔐 Login with Google</button>`;
-        document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
-        addControls.style.display = "none";
-      }
-    });
-    // });
-  </script>
+    </script>
 </body>
 </html>
