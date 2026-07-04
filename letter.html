@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 1st Anniversary Shubhuuu!</title>
+    
+    <!-- Cute & Handwritten Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #fff5f5;
+            background-image: radial-gradient(#ffd1d1 1px, transparent 1px), radial-gradient(#ffd1d1 1px, #fff5f5 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            font-family: 'Comfortaa', cursive;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Doodle Background Elements */
+        .doodle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            fill: #ff7675;
+            opacity: 0.3;
+            animation: float Up 6s infinite ease-in-out;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffe8e8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+        }
+
+        .envelope-doodle {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .open-btn {
+            background-color: #ff7675;
+            color: white;
+            border: 3px solid #2d3436;
+            padding: 15px 45px;
+            font-size: 1.8rem;
+            font-family: 'Caveat', cursive;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #2d3436;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .open-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #2d3436;
+            background-color: #ff6b6b;
+        }
+
+        .open-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #2d3436;
+        }
+
+        .intro-text {
+            font-family: 'Caveat', cursive;
+            font-size: 2.8rem;
+            color: #2d3436;
+            margin-bottom: 25px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* Main Letter Container */
+        .letter-container {
+            max-width: 700px;
+            width: 90%;
+            background: #ffffff;
+            padding: 50px 35px;
+            border-radius: 30px;
+            border: 4px solid #2d3436;
+            box-shadow: 8px 8px 0px #ffd1d1, 12px 12px 0px #2d3436;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: scale(0.9) translateY(40px);
+            transition: opacity 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin: 50px 0;
+        }
+
+        .letter-container.reveal {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Graphic Elements Content Inner */
+        .header-doodles {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sparkle-icon {
+            width: 40px;
+            height: 40px;
+            fill: #fab1a0;
+        }
+
+        /* Letter content styles */
+        .letter-text {
+            color: #2d3436;
+            font-family: 'Caveat', cursive;
+            font-size: 1.7rem;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Keeps line breaks and spaces perfectly */
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .cute-divider {
+            display: block;
+            margin: 30px auto;
+            width: 60%;
+            height: auto;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        /* Mini audio player at bottom right */
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            border-radius: 30px;
+            border: 2px solid #2d3436;
+        }
+        .audio-player:hover {
+            opacity: 1;
+        }
+        /* Cute Custom Music Jukebox Widget */
+.jukebox-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5;
+            background: #ffffff;
+            border: 3px solid #2d3436;
+            border-radius: 20px;
+            padding: 10px 20px 28px 20px;
+            box-shadow: 4px 4px 0px #2d3436;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .jukebox-panel.reveal-ui {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .jukebox-title {
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .song-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .song-btn {
+            background: #fff5f5;
+            border: 2px solid #2d3436;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .song-btn:hover {
+            transform: scale(1.1);
+            background: #ffd1d1;
+        }
+
+        .song-btn.active {
+            background: #ff7675;
+            animation: pulse 1.5s infinite;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .song-btn span {
+            font-size: 0.75rem;
+            position: absolute;
+            bottom: -22px; 
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-family: 'Comfortaa', sans-serif;
+            color: #2d3436;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Doodles Canvas -->
+    <div class="doodle-bg" id="doodle-canvas"></div>
+
+    <!-- Intro / Opening Screen -->
+    <div id="intro-screen">
+        <!-- Cute Hand-Drawn Envelope SVG -->
+        <svg class="envelope-doodle" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+            <path d="M12 17c.5 0 1-.2 1.4-.6l.1-.1 1.5-1.8c.3-.4.3-1 0-1.4l0 0c-.4-.4-1-.4-1.4 0l-1.6 1.9-1.6-1.9c-.4-.4-1-.4-1.4 0l0 0c-.3.4-.3 1 0 1.4l1.5 1.8.1.1c.4.4.9.6 1.4.6z" fill="#ff7675" stroke="none"></path>
+        </svg>
+        <h1 class="intro-text">Oiii Shubhuuu, idhar dekh ke baat karo! ❤️<br><span style="font-size: 1.8rem; color:#636e72;"></span></h1>
+        <button class="open-btn" onclick="openLetter()">🫀🫀🫀</button>
+    </div>
+
+    <!-- The Audio Element -->
+    <!-- Audio Elements for both files -->
+    <audio id="bg-music-1" src="music.mp3" loop></audio>
+    <audio id="bg-music-2" src="selfless.mp3" loop></audio>
+
+    <!-- Custom Floating Jukebox panel -->
+    <div class="jukebox-panel" id="jukebox">
+        <div class="jukebox-title">Our Playlist 🎧</div>
+        <div class="song-options">
+            <button class="song-btn active" id="btn-track1" onclick="switchTrack(1)">🪬<span>For us</span></button>
+            <button class="song-btn" id="btn-track2" onclick="switchTrack(2)">💌<span>For you</span></button>
+        </div>
+    </div>
+
+    <!-- The Letter Paper -->
+    <div class="letter-container" id="letter">
+        
+        <!-- Header Sparkle Doodles -->
+        <div class="header-doodles">
+            <svg class="sparkle-icon" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+            <span style="font-size: 2.5rem;">💌</span>
+            <svg class="sparkle-icon" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+        </div>
+        
+        <!-- EXACT UNCHANGED TEXT BOX -->
+        <div class="letter-text">Namah Parvati Pataye Hara Hara Mahadeva!
+Ganpati Baba Morya!
+Jai Bajranbali
+
+( Thank you universe and Gauri shankar mandir ke sabhiiii bhagwaan ko to make me write this )
+
+For my Right one, Right time&nbsp;
+
+Happy 1st year Anniversary love of my life Shubhuuu Dixit. As the 30th of every month passed my my love for you, my likeness for you, my respect for you, my happiness, my believe on you everything good has increased. Everything. It has been a crazyyyyy year, happiest year. Shubhuuu i love you soo sooo muchhh and i admire and value every second of time we had spent and we will. You make me want to be a better men for myself for us and in general. You have given me so muchhh love that this boy Rama couldn’t have imagined that this is actually real and actually honest.&nbsp;
+You have infused in my life, in my days, in my work, in my routine. I like sharing life w you. I like knowing you are sharing your life w me.&nbsp;
+Now that you are leaving delhi i so badly want to leave everything aside and just spend all the remaining days here w you. Go every place you like, we like, i like w you. Eat every things that you like without bothering about the calories. Jump as high i can on the trampoline. Idk i feel sad thinking this change. But at the same time knowing that in all of this change you will be there w me, you will be my constant. We will evolve and we and our love won’t change…&nbsp;
+Shubhuuu in this whole 1 year i have seen you getting things done aside of all the challenges, keeping yourself tight w ups and downs, staying there for me. I am&nbsp;&nbsp;so sooo thankful for every love you have given me, accepting all the love i have given you, spending weekends weekdays 30th everything w me, sharing your daal chawaal bites w me, coming to ggn for me, stepping out of your comfort zones for me, being the voice in our misunderstandings when i fell weak… and many more
+I love us, I love all of these to the deepest tissue of my heart.&nbsp;
+I wish there was a way to know you're in the good old days before you've actually left them…
+Remembering and sharing w you some of our / my good old days so that we can find the better ones together in coming days and challenges… ( i know we will be alright )&nbsp;
+Our weekends lazy mornings
+Dosa, breadroll making sessions
+Aloo ki bouri godi-s
+Calling chubhuu golu molu shonna baby sweetheart darling …
+Getting called as pookxer, manju, mannu pannu, baby…
+Making Cakes
+Our dinner, lunch breakfast dates
+GUPCHUPPPPPPPPP w you&nbsp;
+showing up w flowers ( sorry there hasn’t been any lately :( You will have your flowers soon my love )
+ordering from Khadak Singh in our intial days
+Going and sharing my mandir w you
+Sharing my closet w you
+Washing your clothes w mine
+Sharing our childhood stories making me want you more
+you dancing for me on every song plays on TV
+Our sexy makeout sessions kikikki
+Going movies w you, watching movies w you, watching shows for you
+sharing songs w you, I Love your movies and songs recommendations… To this date i like I deny me and many more.&nbsp;
+Watching good place w you
+Going on shopping date w you ( hope we do this soon in ambd )&nbsp;
+sharing things we see in daily life on a video call
+our tradition of monthi-versarry mails
+sharing memes and making me them part of daily conversations hehe ( you remember that ‘w mumma’ or ‘idhar dekh ke baat karo’ thing ? )
+Cuddly nights in Delhi’s winter
+seeing you in my GAP jacket ( You look dapper in that )
+Sending Kicchis in Angel Numbers
+TIme we spent in banaras ( hope we get to have that very soon :evileye)
+Our navratri date night ( I LOVE IT )
+Riding in Vande bharat w you
+TIMEZONE w you
+sharing a similar uniqlo tshirt&nbsp;
+writing letters for you or getting desserts for you
+our late night walkings in phase 1
+Our badminton date ( lets try to have that before you go :( , katti jaarhi ho chodke )
+Our Cybercity lunch date in the middle of office hehehe I loved it
+our NGMA, KNMA date and how you kept saying “chee ye bekar hai” and we ended up drawing mini paintings outside LMAO
+ordering first food order for me
+Gifting my first lego, First htowheels and many more I love you so muchhh
+Our Magic show night was aaamaammaaazinggggg
+watching episodes of the office w you , hey listen i miss that, can we watch some of the episodes i liked of the show together now? please?
+Selecting my diwali kurta hehehe, going cc for light shopping, that was crazy we went there twice back to back hahaha
+You taking embarassing photos of me
+We discovering Havemore
+Sharing my diwali w you, you sharing your diwali w me, I love it.&nbsp;
+doing mehendi on your hands..
+Our jalebi time in this one year was crazy
+Celebrating your birthday, i loved being there w you on your birthday
+THANKKKK YOU SO MUCHH for giving me the best birthday ever, Best gifts ever, YOU ARE THE ABSOLUTE BEST SHUBHUUUU
+the custom hardcover kite runner, lego, letter, frame, drinking game i loved each of them to my heart…
+celebrating christman w you, exchanging presents on christmas w you
+sharing stickers w you has become idk just necessary hehehehe I see you in all stickers you send me
+The giraffe on my office desk reminds me of you and how lucky i am having you as my bestfriend and girlfriend and golu
+OUR JAIPURRRR TRIIPPPPPP was lovelyyyyyy. I hope and i really pray we do more trips in coming time and explore many places..
+thank youu sooo much for inviting me in your fest and showing your college which has given you a lot and you have given a lot back too.&nbsp;
+Sharing my bali trips w you, helping me w shopping for it i liked the prev day before going to bali i spent w you&nbsp;
+thanks youuuu so muchhh for showing up, caring for me, being there w my not-good-health days ( ykwim )&nbsp;
+sharing screen care routine w you and taking selfies w mask like aliens hahahaa
+painting w me, making a couple of pinky starts on my paintings which will be immortalised going forwards
+makings legos w you, puzzles w you, having house parties w you involved i love that,&nbsp;
+sharing exam schedules, exam days, result days. I am proud of you shubhuuu. my girl.&nbsp;
+
+Shubhuuu this list can go forever and will keep going. I remeber every moment we spent together closely everything we do for eachother i do remeber, that’s what keep me going and makes me love you more. ANYDAY anytime i am happy to answer about any of the things i menitoned above in details for you, given that you are in my godi and giving me kicchis in between,&nbsp;
+
+Shubhuuu i feel sooo sooooo comfortable when you are around or just from the fact that you got me. on my bad days you make me feel lighter, better.&nbsp;
+Shubuhuu i am scared how we are going to handle being apart because we did so good staying close, you made me sooooo happy, the happiest guy here in this universe by being here physically mentally emotionally in everyway possible. And that ’s the beauty of it, i am excited for our coming forward life as individual and as a couple. I can’t wait to hear MICA stories from you…
+Listen this carefuly, oiii idhar dekh ke baat karo, I got you, i got you tight. In ambd, in vns, in delhi everywhere i got you okay? You ever find youself in any problem or things are not making sense you know right i m there w you? Just know it. I will be there for you as bigger brother you didn’t have, as your best friend, as your boyfriend as the same mannu pooxer manju.&nbsp;
+( i have gottne myself teary eyes writing all of these, Thank you for giving happy tear moments in life:) )&nbsp;
+
+I love you shubhuuu. I love you w my everything.
+
+All the best of luck my love.
+
+yours&nbsp;
+Manju Nath Upadhay
+</div>
+        <!-- END OF TEXT BOX -->
+
+        <!-- Bottom Doodle Divider -->
+        <svg class="cute-divider" viewBox="0 0 100 10" fill="none" stroke="#2d3436" stroke-width="1.5" stroke-linecap="round">
+            <path d="M10 5 C 20 2, 25 8, 30 5 C 35 2, 40 8, 45 5 C 50 2, 55 8, 60 5 C 65 2, 70 8, 75 5 C 85 2, 90 8, 95 5" stroke-dasharray="2 2"/>
+        </svg>
+        <div style="text-align: center; font-size: 2rem;">🪬💕💋</div>
+    </div>
+
+    <script>
+        // 1. Track states and elements
+        const track1 = document.getElementById('bg-music-1');
+        const track2 = document.getElementById('bg-music-2');
+        const btn1 = document.getElementById('btn-track1');
+        const btn2 = document.getElementById('btn-track2');
+
+        // 2. Track toggling core function
+        function switchTrack(trackNum) {
+            if (trackNum === 1) {
+                track2.pause();
+                track2.currentTime = 0; // Rewind track 2
+                track1.play().catch(e => console.log("Playback interaction error"));
+                btn1.classList.add('active');
+                btn2.classList.remove('active');
+            } else {
+                track1.pause();
+                track1.currentTime = 0; // Rewind track 1
+                track2.play().catch(e => console.log("Playback interaction error"));
+                btn2.classList.add('active');
+                btn1.classList.remove('active');
+            }
+        }
+
+        // 3. Keep your background floating hearts setup running
+        function createBackgroundDoodles() {
+            const canvas = document.getElementById('doodle-canvas');
+            const colors = ['#ff7675', '#fd79a8', '#fab1a0', '#ffb8b8'];
+            
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                heart.setAttribute("class", "floating-heart");
+                heart.setAttribute("viewBox", "0 0 24 24");
+                
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heart.style.width = (Math.random() * 20 + 15) + 'px';
+                heart.style.animationDuration = (Math.random() * 4 + 5) + 's';
+                heart.style.animationDelay = (Math.random() * -5) + 's';
+                heart.style.fill = colors[Math.floor(Math.random() * colors.length)];
+                heart.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
+                canvas.appendChild(heart);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', createBackgroundDoodles);
+
+        // 4. Modified transition logic triggered by clicking "Open"
+        function openLetter() {
+            const intro = document.getElementById('intro-screen');
+            const letter = document.getElementById('letter');
+            const jukebox = document.getElementById('jukebox');
+
+            // Start playing track 1 immediately on open
+            switchTrack(1);
+
+            // Fade out intro screen gently
+            intro.style.opacity = '0';
+            intro.style.visibility = 'hidden';
+
+            // Scale and bounce letter / jukebox up smoothly
+            setTimeout(() => {
+                letter.classList.add('reveal');
+                jukebox.classList.add('reveal-ui');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
