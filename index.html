@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Precision, Recall &amp; F1: Notes and Practice</title>
+<title>Accuracy, Precision, Recall &amp; F1: Notes and Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -156,7 +156,7 @@
       <span style="background:var(--fp)">FP</span><span style="background:var(--tn)">TN</span>
     </div>
     <div>
-      <h1>Precision, recall and F1</h1>
+      <h1>Accuracy, precision, recall and F1</h1>
       <p class="tag">Read the notes, then work through nine short numericals. Each answer is checked as you go, with the full working underneath.</p>
     </div>
   </header>
@@ -181,11 +181,23 @@
         <div class="kc c-fp"><small>False positive (FP)</small><span>Says spam, but it is clean. Wrong (Type I error).</span></div>
         <div class="kc c-tn"><small>True negative (TN)</small><span>Says not spam, and it is clean. Correct.</span></div>
       </div>
-      <p>The three metrics below look at the same model from different angles.</p>
+      <p>The four metrics below look at the same model from different angles.</p>
     </section>
 
     <section>
-      <h2><span class="sn">2</span>Precision: quality of positive predictions</h2>
+      <h2><span class="sn">2</span>Accuracy: overall correctness</h2>
+      <p>Accuracy is the simplest metric: the share of all predictions, spam or not, that the model got right.</p>
+      <p class="qline">Out of every email the model looked at, how many did it classify correctly?</p>
+      <div class="eq"><span>Accuracy =</span><span class="frac frac-lg"><span>TP + TN</span><span>TP + FP + FN + TN</span></span></div>
+      <p><b>When it matters most:</b> when the classes are roughly balanced and every kind of mistake costs about the same. It is the easiest number to explain, but it can be dangerously misleading when one class is rare.</p>
+      <div class="example">
+        <p><b>Worked example.</b> A disease test screens 1,000 patients, only 20 of whom are actually sick. A lazy model that predicts “healthy” for everyone gets 980 right and 20 wrong.</p>
+        <p>Accuracy = 980 / 1,000 = 0.98 — yet it catches zero sick patients. Recall is 0, so the headline number hides a useless model.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="sn">3</span>Precision: quality of positive predictions</h2>
       <p>Precision measures how reliable the model is when it predicts the positive class.</p>
       <p class="qline">When the model predicts an email is spam, how often is it actually right?</p>
       <div class="eq"><span>Precision =</span><span class="frac frac-lg"><span>TP</span><span>TP + FP</span></span></div>
@@ -193,7 +205,7 @@
     </section>
 
     <section>
-      <h2><span class="sn">3</span>Recall (sensitivity): how many positives are found</h2>
+      <h2><span class="sn">4</span>Recall (sensitivity): how many positives are found</h2>
       <p>Recall measures the model’s ability to find all the positive cases in the dataset.</p>
       <p class="qline">Out of all the actual spam emails in the inbox, how many did the model manage to catch?</p>
       <div class="eq"><span>Recall =</span><span class="frac frac-lg"><span>TP</span><span>TP + FN</span></span></div>
@@ -201,7 +213,7 @@
     </section>
 
     <section>
-      <h2><span class="sn">4</span>F1 score: the balance</h2>
+      <h2><span class="sn">5</span>F1 score: the balance</h2>
       <p>Most problems face a <em>precision–recall trade-off</em>. Tune a model to catch absolutely everything (high recall) and it will make more mistakes (low precision). Make it so strict that it only predicts positive when it is certain (high precision) and it will miss many cases (low recall).</p>
       <p>The F1 score balances the two. It is the <em>harmonic</em> mean of precision and recall rather than the ordinary average, so if either one is very low the F1 score collapses with it.</p>
       <div class="eq"><span>F1 = 2 ×</span><span class="frac frac-lg"><span>Precision × Recall</span><span>Precision + Recall</span></span></div>
@@ -217,12 +229,13 @@
     </section>
 
     <section>
-      <h2><span class="sn">5</span>Direct comparison</h2>
+      <h2><span class="sn">6</span>Direct comparison</h2>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Metric</th><th>Focuses on</th><th>Key risk it minimises</th><th>Real-world example</th></tr></thead>
           <tbody>
-            <tr><td><b>Precision</b></td><td>Accuracy of positive guesses</td><td>False positives (false alarms)</td><td>Spam filter: avoid blocking real emails.</td></tr>
+            <tr><td><b>Accuracy</b></td><td>Overall correctness across all predictions</td><td>None — misleading when classes are imbalanced</td><td>Balanced datasets only, e.g. classifying roughly 50/50 classes.</td></tr>
+            <tr><td><b>Precision</b></td><td>Correctness of positive guesses</td><td>False positives (false alarms)</td><td>Spam filter: avoid blocking real emails.</td></tr>
             <tr><td><b>Recall</b></td><td>Completeness of positive capture</td><td>False negatives (missed cases)</td><td>Medical test: avoid missing a disease.</td></tr>
             <tr><td><b>F1 score</b></td><td>A healthy balance of the two</td><td>Imbalance between precision and recall</td><td>E-commerce fraud: catch thieves without blocking real buyers.</td></tr>
           </tbody>
@@ -243,6 +256,7 @@
     <details class="formulas">
       <summary>Formulas</summary>
       <div class="fgrid">
+        <div class="f"><b>Accuracy</b><span class="frac"><span>TP + TN</span><span>TP+FP+FN+TN</span></span></div>
         <div class="f"><b>Precision</b><span class="frac"><span>TP</span><span>TP + FP</span></span></div>
         <div class="f"><b>Recall</b><span class="frac"><span>TP</span><span>TP + FN</span></span></div>
         <div class="f"><b>F1</b>2 × <span class="frac"><span>P × R</span><span>P + R</span></span></div>
@@ -268,32 +282,35 @@ const Q = [
   { title:"Spam filter",
     scenario:"A spam filter is tested on 200 emails. Here is how it did.",
     labels:{pos:"Spam", neg:"Clean"}, m:{tp:45, fn:15, fp:5, tn:135},
-    ask:[{l:"Precision",v:45/50},{l:"Recall",v:45/60},{l:"F1 score",v:2*45/(90+5+15)}],
+    ask:[{l:"Precision",v:45/50},{l:"Recall",v:45/60},{l:"F1 score",v:2*45/(90+5+15)},{l:"Accuracy",v:180/200}],
     work:[
       "Precision = 45 / (45 + 5) = 45 / 50 = <b>0.90</b>",
       "Recall = 45 / (45 + 15) = 45 / 60 = <b>0.75</b>",
       "F1 = 2 × 0.90 × 0.75 / (0.90 + 0.75) = 1.35 / 1.65 ≈ <b>0.818</b>",
+      "Accuracy = (45 + 135) / 200 = 180 / 200 = <b>0.90</b>",
       "<span class='take'>Few false alarms, but a quarter of the spam still gets through.</span>"]},
 
   { title:"Disease screening",
     scenario:"A screening test is run on 1,000 patients. Only 20 actually have the disease.",
     labels:{pos:"Sick", neg:"Healthy"}, m:{tp:18, fn:2, fp:32, tn:948},
-    ask:[{l:"Precision",v:18/50},{l:"Recall",v:18/20},{l:"F1 score",v:36/(36+32+2)}],
+    ask:[{l:"Precision",v:18/50},{l:"Recall",v:18/20},{l:"F1 score",v:36/(36+32+2)},{l:"Accuracy",v:966/1000}],
     work:[
       "Precision = 18 / (18 + 32) = 18 / 50 = <b>0.36</b>",
       "Recall = 18 / (18 + 2) = 18 / 20 = <b>0.90</b>",
       "F1 = 2 × 0.36 × 0.90 / (0.36 + 0.90) = 0.648 / 1.26 ≈ <b>0.514</b>",
-      "<span class='take'>This is what you want from a screening test: it misses almost no one, at the cost of many false alarms that a follow-up test can clear.</span>"]},
+      "Accuracy = (18 + 948) / 1000 = 966 / 1000 = <b>0.966</b>",
+      "<span class='take'>This is what you want from a screening test: it misses almost no one, at the cost of many false alarms that a follow-up test can clear. Notice accuracy looks great here purely because healthy patients are the vast majority — it would stay high even if recall were much worse.</span>"]},
 
   { title:"Card fraud",
     scenario:"A fraud model reviews 1,000 card transactions.",
     labels:{pos:"Fraud", neg:"Genuine"}, m:{tp:30, fn:30, fp:10, tn:930},
-    ask:[{l:"Precision",v:0.75},{l:"Recall",v:0.5},{l:"F1 score",v:0.6}],
+    ask:[{l:"Precision",v:0.75},{l:"Recall",v:0.5},{l:"F1 score",v:0.6},{l:"Accuracy",v:960/1000}],
     work:[
       "Precision = 30 / (30 + 10) = 30 / 40 = <b>0.75</b>",
       "Recall = 30 / (30 + 30) = 30 / 60 = <b>0.50</b>",
       "F1 = 2 × 0.75 × 0.50 / (0.75 + 0.50) = 0.75 / 1.25 = <b>0.60</b>",
-      "<span class='take'>When it flags fraud it is usually right, but half the fraud goes unnoticed.</span>"]},
+      "Accuracy = (30 + 930) / 1000 = 960 / 1000 = <b>0.96</b>",
+      "<span class='take'>When it flags fraud it is usually right, but half the fraud goes unnoticed — accuracy stays high regardless, since genuine transactions dominate the total.</span>"]},
 
   { title:"Reading it from words",
     scenario:"A spam filter flags 80 emails as spam. 60 of those really are spam. The inbox contains 100 spam emails in total.",
@@ -334,11 +351,12 @@ const Q = [
   { title:"Lowering the threshold",
     scenario:"Model A gives TP = 70, FP = 30, FN = 30, so its precision, recall and F1 are all 0.70. Model B is the same model with a lower threshold.",
     labels:{pos:"Positive", neg:"Negative"}, m:{tp:90, fn:10, fp:110, tn:790}, mlabel:"Model B",
-    ask:[{l:"Precision (B)",v:0.45},{l:"Recall (B)",v:0.9},{l:"F1 score (B)",v:0.6}],
+    ask:[{l:"Precision (B)",v:0.45},{l:"Recall (B)",v:0.9},{l:"F1 score (B)",v:0.6},{l:"Accuracy (B)",v:880/1000}],
     work:[
       "Precision = 90 / (90 + 110) = 90 / 200 = <b>0.45</b>",
       "Recall = 90 / (90 + 10) = 90 / 100 = <b>0.90</b>",
       "F1 = 2 × 0.45 × 0.90 / (0.45 + 0.90) = 0.81 / 1.35 = <b>0.60</b>",
+      "Accuracy = (90 + 790) / 1000 = 880 / 1000 = <b>0.88</b>",
       "<span class='take'>Recall went up from 0.70 to 0.90, but precision fell so far that F1 dropped from 0.70 to 0.60. On F1, Model A is the better balance.</span>"]},
 
   { title:"The counting shortcut",
