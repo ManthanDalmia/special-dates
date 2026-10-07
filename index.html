@@ -3,621 +3,529 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>काशी</title>
-
+<title>Precision, Recall &amp; F1: Notes and Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700&family=Yatra+One&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --night:#14101F; --twilight:#2E1A3A;
-  --gold:#D9A521; --marigold:#E8752A; --flame:#F6C445;
-  --silk:#A8175A; --sindoor:#C4462F; --paper:#FFF3D9;
-  --dawn:0;
-  --display:"Fraunces",Georgia,serif;
-  --deva:"Yatra One",var(--display);
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--night);color:var(--paper);overflow-x:hidden;
-  font-family:var(--display);-webkit-font-smoothing:antialiased}
+  :root{
+    --paper:#f2f4f1; --card:#ffffff; --ink:#1e2733; --muted:#66707c; --line:#d8ddd6; --soft:#e9ece7;
+    --tp:#2e7d5b; --tp-bg:#e4f1ea;
+    --fp:#bf7419; --fp-bg:#f8eddc;
+    --fn:#8b3b6e; --fn-bg:#f3e4ee;
+    --tn:#5f6c7a; --tn-bg:#e8ecf0;
+    --good:#2e7d5b; --bad:#b23a3a; --bad-bg:#f8e7e7;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Figtree",system-ui,sans-serif; color:var(--ink); background:var(--paper);
+    line-height:1.55; -webkit-font-smoothing:antialiased; padding:32px 18px 64px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
 
-/* ── sky rises with scroll ── */
-.sky,.sky-night{position:fixed;inset:0;z-index:-2;pointer-events:none}
-.sky{background:linear-gradient(172deg,#4A2B50 0%,#8A3C3A 34%,var(--marigold) 68%,var(--flame) 100%)}
-.sky-night{background:linear-gradient(180deg,#0B0814 0%,var(--night) 42%,var(--twilight) 100%);
-  opacity:calc(1 - var(--dawn))}
-.stars{position:fixed;inset:0 0 45% 0;z-index:-1;pointer-events:none;opacity:calc(1 - var(--dawn))}
-.sun{position:fixed;left:50%;z-index:-1;width:min(60vw,340px);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle,#FFE9A8 0%,var(--flame) 44%,rgba(232,117,42,0) 72%);
-  bottom:calc(-36vh + var(--dawn) * 46vh);transform:translateX(-50%);
-  opacity:calc(var(--dawn) * .9);pointer-events:none}
+  /* ---- Header: the matrix is the mark ---- */
+  header{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;margin-bottom:22px}
+  .mark{display:grid;grid-template-columns:repeat(2,34px);grid-template-rows:repeat(2,34px);gap:4px}
+  .mark span{border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff}
+  h1{font-family:"Source Serif 4",Georgia,serif;font-weight:700;font-size:clamp(26px,5.4vw,36px);line-height:1.1;margin:0 0 6px;letter-spacing:-.3px}
+  .tag{margin:0;color:var(--muted);font-size:15.5px;max-width:52ch}
+  @media (max-width:520px){header{grid-template-columns:1fr} .mark{order:-1}}
 
-.hearts{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.heart{position:absolute;bottom:-40px;width:10px;height:10px;opacity:0;background:var(--sindoor);
-  clip-path:path("M5 10S0 6.5 0 3.4A3.3 3.3 0 0 1 5 .9 3.3 3.3 0 0 1 10 3.4C10 6.5 5 10 5 10Z");
-  animation:rise linear infinite}
-@keyframes rise{0%{transform:translateY(0) rotate(0);opacity:0}14%{opacity:.5}
-  86%{opacity:.26}100%{transform:translateY(-108vh) rotate(210deg);opacity:0}}
+    .btn{
+    font:inherit;font-weight:600;font-size:15px;cursor:pointer;border-radius:10px;padding:10px 18px;
+    background:var(--ink);color:#fff;border:1.5px solid var(--ink);transition:background .15s,opacity .15s;
+  }
+  .btn:hover{background:#000}
+  .btn:focus-visible,.ans input:focus-visible,summary:focus-visible{outline:3px solid #7fb39b;outline-offset:2px}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .btn.ghost:hover{border-color:var(--ink)}
+  .btn.ghost svg{width:16px;height:16px;vertical-align:-3px;margin-right:6px}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
 
-.river{position:fixed;left:0;right:0;bottom:0;height:78px;z-index:2;pointer-events:none;
-  background:linear-gradient(180deg,rgba(46,26,58,0) 0%,rgba(38,20,48,.5) 36%,rgba(15,9,24,.92) 100%)}
-.river i{position:absolute;bottom:20px;width:8px;height:8px;border-radius:50%;background:var(--flame);
-  box-shadow:0 0 13px 5px rgba(246,196,69,.5);animation:drift 26s linear infinite}
-@keyframes drift{from{transform:translateX(-10vw)}50%{transform:translateX(48vw) translateY(-5px)}
-  to{transform:translateX(114vw)}}
+  details.formulas{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:22px}
+  details.formulas summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+  details.formulas summary::-webkit-details-marker{display:none}
+  details.formulas summary::after{content:"+";color:var(--muted);font-weight:500}
+  details.formulas[open] summary::after{content:"–"}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;padding:0 16px 16px}
+  .f{background:var(--paper);border-radius:9px;padding:10px 12px;font-size:14px}
+  .f b{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:4px}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:14px;margin:0 3px}
+  .frac>span:first-child{border-bottom:1.2px solid var(--ink);padding:0 4px 1px}
+  .frac>span:last-child{padding:1px 4px 0}
 
-/* ── layout ── */
-.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px 150px}
+  /* ---- Tabs ---- */
+  .tabs{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:12px;margin:0 0 22px;width:max-content;max-width:100%}
+  .tabs button{font:inherit;font-weight:600;font-size:15px;border:0;background:transparent;color:var(--muted);padding:8px 20px;border-radius:9px;cursor:pointer}
+  .tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(30,39,51,.12)}
+  .tabs button:focus-visible{outline:3px solid #7fb39b;outline-offset:2px}
 
-/* ── hero ── */
-.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.kashi{font-family:var(--deva);font-size:clamp(5rem,27vw,14rem);line-height:.86;margin:0;
-  text-shadow:0 0 70px rgba(246,196,69,.3)}
-.big-temple{width:min(52vw,240px);height:auto;margin-bottom:6px;color:var(--gold)}
-.cue{margin-top:34px;font-size:1.5rem;opacity:.6;animation:bob 2.6s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
-.skyline{display:block;width:100vw;margin-left:calc(50% - 50vw);margin-top:34px;margin-bottom:-1px}
+  /* ---- Notes ---- */
+  .notes{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 26px 24px}
+  .notes section{padding:18px 0 6px;border-bottom:1px solid var(--line)}
+  .notes section:last-of-type{border-bottom:0}
+  .notes h2{font-family:"Source Serif 4",Georgia,serif;font-size:22px;font-weight:700;line-height:1.25;margin:0 0 10px}
+  .notes h2 .sn{display:inline-block;min-width:1.4em;color:var(--muted);font-weight:600}
+  .notes p{margin:0 0 12px;font-size:16px;max-width:66ch}
+  .qline{font-family:"Source Serif 4",Georgia,serif;font-style:italic;font-size:17px!important;border-left:3px solid var(--line);padding-left:12px}
+  .eq{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 16px;font-family:"Source Serif 4",Georgia,serif;font-size:18px;flex-wrap:wrap}
+  .frac.frac-lg{font-size:18px}
+  .cm-key{margin:4px 0 16px}
+  .kc{border-radius:10px;padding:10px 12px;border-left:4px solid;font-size:14px;line-height:1.4}
+  .kc small{display:block;font-weight:700;font-size:13px;margin-bottom:3px}
+  .example{background:var(--paper);border-left:3px solid var(--ink);border-radius:0 10px 10px 0;padding:12px 16px;margin:0 0 14px}
+  .example p{font-size:15px;margin:0 0 6px} .example p:last-child{margin:0}
+  .tablewrap{overflow-x:auto;margin:4px 0 10px}
+  .notes table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+  .notes th{text-align:left;font-weight:700;padding:9px 10px;border-top:1.5px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .notes td{padding:9px 10px;vertical-align:top;border-bottom:1px solid var(--line)}
+  .notes tbody tr:last-child td{border-bottom:1.5px solid var(--ink)}
+  .notes-end{display:flex;flex-wrap:wrap;gap:10px;padding-top:18px}
+  @media (max-width:520px){ .notes{padding:4px 16px 18px} .cm.cm-key{grid-template-columns:1fr 1fr} .cm.cm-key .h:first-child,.cm.cm-key .r{display:none} }
 
-/* ── panorama strip ── */
-.pano{display:block;width:100vw;margin:clamp(40px,8vw,80px) 0 clamp(40px,8vw,80px) calc(50% - 50vw);
-  color:var(--paper);opacity:.9}
+  /* ---- Progress ---- */
+  .rail{margin:0 0 14px}
+  .rail-top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .rail-top b{color:var(--ink)}
+  .bar{height:6px;background:var(--soft);border-radius:999px;overflow:hidden}
+  .fill{height:100%;width:0;background:var(--ink);transition:width .35s ease}
 
-/* ── doodle grid ── */
-.grid{display:grid;gap:1px;background:rgba(217,165,33,.26);
-  border:1px solid rgba(217,165,33,.26);border-radius:4px;overflow:hidden;
-  grid-template-columns:repeat(5,1fr)}
-.cell{background:rgba(11,8,20,.5);aspect-ratio:1;display:grid;place-items:center;padding:12%;
-  transition:background .35s ease}
-.cell:hover{background:rgba(217,165,33,.12)}
-.cell svg{width:100%;height:100%;color:var(--paper);overflow:visible;
-  transition:transform .4s cubic-bezier(.34,1.3,.64,1)}
-.cell:hover svg{transform:rotate(-3deg) scale(1.07)}
-.cell.gold svg{color:var(--gold)}
-.cell.hers{background:rgba(168,23,90,.16)}
-.cell.hers svg{color:#FFC4DE}
-.cell.hers:hover{background:rgba(168,23,90,.26)}
+  /* ---- Question card ---- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 22px 20px}
+  .qhead{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+  .qtitle{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:21px;line-height:1.25;margin:0}
+  .qnum{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .scenario{margin:0 0 16px;font-size:15.5px}
 
-/* hand-drawn stroke defaults */
-.d{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.dt{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.fillc{fill:currentColor;stroke:none}
-.rough{filter:url(#rough)}
+  .cm{display:grid;grid-template-columns:minmax(92px,auto) 1fr 1fr;gap:6px;margin:0 0 18px;font-size:13.5px}
+  .cm .h{color:var(--muted);font-weight:600;text-align:center;align-self:end;padding-bottom:2px}
+  .cm .r{color:var(--muted);font-weight:600;align-self:center}
+  .cell{border-radius:10px;padding:10px 12px;border-left:4px solid;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .cell small{font-weight:700;font-size:12px}
+  .cell strong{font-family:"Source Serif 4",Georgia,serif;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+  .c-tp{background:var(--tp-bg);border-color:var(--tp)} .c-tp small{color:var(--tp)}
+  .c-fp{background:var(--fp-bg);border-color:var(--fp)} .c-fp small{color:var(--fp)}
+  .c-fn{background:var(--fn-bg);border-color:var(--fn)} .c-fn small{color:var(--fn)}
+  .c-tn{background:var(--tn-bg);border-color:var(--tn)} .c-tn small{color:var(--tn)}
 
-/* ── diya row ── */
-.row{display:flex;justify-content:center;gap:clamp(14px,4vw,42px);flex-wrap:wrap;
-  margin:clamp(46px,9vw,92px) 0}
-.row svg{width:clamp(46px,9vw,74px);height:auto;color:var(--flame);overflow:visible}
-.row svg:nth-child(even){transform:translateY(14px)}
+  .ask{font-weight:600;font-size:14.5px;margin:0 0 10px}
+  .answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .ans label{display:block;font-size:13.5px;font-weight:600;margin-bottom:4px}
+  .ans input{
+    width:100%;font:inherit;font-size:17px;font-variant-numeric:tabular-nums;padding:9px 11px;
+    border:1.5px solid var(--line);border-radius:9px;background:#fbfcfa;color:var(--ink);
+  }
+  .ans input.ok{border-color:var(--good);background:var(--tp-bg)}
+  .ans input.no{border-color:var(--bad);background:var(--bad-bg)}
+  .ans .fb{font-size:13px;min-height:19px;margin-top:3px}
+  .fb.ok{color:var(--good)} .fb.no{color:var(--bad)}
+  .hint{font-size:12.5px;color:var(--muted);margin:8px 0 0}
 
-/* ── letter ── */
-.gate{text-align:center;margin-top:clamp(20px,5vw,44px);position:relative}
+  .working{margin-top:16px;border-left:3px solid var(--ink);background:var(--paper);border-radius:0 10px 10px 0;padding:12px 15px;font-size:14.5px;display:none}
+  .working.show{display:block}
+  .working p{margin:0 0 6px} .working p:last-child{margin:0}
+  .working .take{color:var(--muted);font-style:italic}
 
-/* ── the unlit diya ── */
-.diya-btn{-webkit-appearance:none;appearance:none;background:none;border:0;cursor:pointer;
-  padding:26px;position:relative;display:inline-flex;flex-direction:column;align-items:center;
-  gap:16px;border-radius:28px}
-.diya-btn svg{width:clamp(150px,36vw,220px);height:auto;color:rgba(255,243,217,.3);overflow:visible;
-  transition:transform .45s cubic-bezier(.34,1.3,.64,1),color .4s ease}
-.diya-btn:hover svg{transform:translateY(-5px);color:rgba(255,243,217,.6)}
-.diya-btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px}
-.diya-btn:focus-visible svg{color:rgba(255,243,217,.6)}
-.diya-btn .hint{display:none}
+  .foot{display:flex;align-items:center;gap:10px;margin-top:18px}
+  .foot .sp{margin-left:auto}
+  .score-mini{font-size:13.5px;color:var(--muted)}
+  .score-mini b{color:var(--ink)}
 
-/* invitation ring */
-.diya-btn::before{content:"";position:absolute;left:50%;top:40%;width:130px;height:130px;
-  margin:-65px 0 0 -65px;border:1px solid rgba(246,196,69,.7);border-radius:50%;
-  animation:ring 2.6s ease-out infinite;pointer-events:none}
-.diya-btn::after{content:"";position:absolute;left:50%;top:40%;width:130px;height:130px;
-  margin:-65px 0 0 -65px;border:1px solid rgba(246,196,69,.45);border-radius:50%;
-  animation:ring 2.6s ease-out .9s infinite;pointer-events:none}
-@keyframes ring{
-  0%{transform:scale(.5);opacity:0}
-  25%{opacity:.8}
-  100%{transform:scale(1.75);opacity:0}
-}
+  /* ---- Results ---- */
+  .result{text-align:center}
+  .big{font-family:"Source Serif 4",Georgia,serif;font-weight:700;font-size:64px;line-height:1;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+  .big small{font-size:24px;color:var(--muted);font-weight:600}
+  .result .sub{color:var(--muted);margin:6px auto 18px;max-width:44ch}
+  .rows{text-align:left;margin:10px 0 6px}
+  .row{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+  .row:last-child{border-bottom:none}
+  .row .s{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .result .foot{justify-content:center}
 
-/* the wick catches */
-.diya-btn .flame{opacity:0;transform-origin:50% 100%;transition:opacity .45s ease}
-.diya-btn.lit .flame{opacity:1;animation:flick 1.6s ease-in-out infinite}
-@keyframes flick{
-  0%,100%{transform:scale(1) skewX(0)}
-  30%{transform:scale(1.1,.93) skewX(-4deg)}
-  65%{transform:scale(.94,1.08) skewX(4deg)}
-}
-.diya-btn.lit{cursor:default}
-.diya-btn.lit svg{color:var(--flame)}
-.diya-btn.lit::before,.diya-btn.lit::after{opacity:0;animation:none}
-
-/* the light bursts out */
-.bloom{position:absolute;left:50%;top:40%;width:clamp(260px,70vw,540px);aspect-ratio:1;
-  transform:translate(-50%,-50%) scale(.2);border-radius:50%;opacity:0;pointer-events:none;
-  background:radial-gradient(circle,rgba(255,233,168,.95) 0%,rgba(246,196,69,.5) 34%,rgba(232,117,42,0) 70%)}
-.diya-btn.lit .bloom{animation:bloom 1.7s cubic-bezier(.2,.7,.3,1) forwards}
-@keyframes bloom{
-  0%{transform:translate(-50%,-50%) scale(.2);opacity:0}
-  22%{opacity:1}
-  100%{transform:translate(-50%,-50%) scale(1);opacity:.45}
-}
-
-/* lighting it brings the sun all the way up */
-body.lit .sky-night{opacity:0;transition:opacity 2.4s ease}
-body.lit .stars{opacity:0;transition:opacity 2.4s ease}
-body.lit .sun{bottom:8vh;opacity:.92;transition:bottom 2.6s cubic-bezier(.3,.8,.3,1),opacity 2s ease}
-
-.letter{display:none;margin-top:40px;text-align:left}
-.letter.open{display:block;animation:unfold .9s cubic-bezier(.34,1.28,.64,1) both}
-@keyframes unfold{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
-.sheet{background:var(--paper);color:#3A2417;border-top:3px solid var(--gold);border-radius:3px;
-  padding:clamp(26px,6vw,48px);box-shadow:0 26px 50px -22px rgba(12,6,20,.75);
-  font-variation-settings:"SOFT" 60,"opsz" 30;font-size:1.09rem;line-height:1.66}
-.sheet .to{font-family:var(--deva);font-size:1.3rem;color:var(--silk);margin:0 0 1em}
-.sheet p{margin:0 0 1em}
-.sheet .lead{font-size:1.2rem;font-variation-settings:"SOFT" 70,"WONK" 1,"opsz" 40;line-height:1.45}
-.sheet .love{font-family:var(--deva);font-size:1.22rem;color:var(--silk);line-height:1.5;
-  margin:1.2em 0}
-.sheet .ps{margin:1.8em 0 0;padding-top:1.1em;border-top:1px solid rgba(58,36,23,.22);
-  font-size:.95rem;font-style:italic;opacity:.8}
-.sheet .sign{font-family:var(--deva);font-size:1.24rem;color:var(--silk);margin:1.2em 0 0;line-height:1.5}
-
-@media (max-width:820px){ .grid{grid-template-columns:repeat(4,1fr)} }
-@media (max-width:600px){ .grid{grid-template-columns:repeat(3,1fr)} .river{height:58px} }
-@media (max-width:380px){ .grid{grid-template-columns:repeat(2,1fr)} }
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
-  .heart{display:none}
-}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:26px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-
-<div class="sky"></div><div class="sky-night"></div>
-<canvas class="stars" aria-hidden="true"></canvas>
-<div class="sun" aria-hidden="true"></div>
-<div class="hearts" aria-hidden="true"></div>
-<div class="river" aria-hidden="true"></div>
-
-<!-- hand-drawn wobble filter -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <filter id="rough">
-    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" result="n" seed="7"/>
-    <feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</defs></svg>
-
 <div class="wrap">
-
-  <header class="hero">
-    <!-- Kashi Vishwanath -->
-    <svg class="big-temple rough" viewBox="0 0 120 150" aria-hidden="true">
-      <path class="d" d="M60 8v6"/>
-      <circle class="d" cx="60" cy="18" r="4"/>
-      <path class="d" d="M50 26c0-4 4-6 10-6s10 2 10 6"/>
-      <path class="d" d="M46 32h28"/>
-      <path class="d" d="M48 34c-1 22-6 34-6 34h36s-5-12-6-34"/>
-      <path class="d" d="M38 72c0-24 8-42 22-56 14 14 22 32 22 56"/>
-      <path class="dt" d="M44 60h32M42 68h36M47 50h26"/>
-      <path class="d" d="M32 76h56v10H32z"/>
-      <path class="d" d="M26 88h68v12H26z"/>
-      <path class="d" d="M52 100v-8a8 8 0 0 1 16 0v8"/>
-      <path class="d" d="M20 102h80v10H20zM14 114h92v10H14z"/>
-      <path class="dt" d="M30 124v8M50 124v8M70 124v8M90 124v8"/>
-      <path class="d" d="M8 136h104"/>
-    </svg>
-    <h1 class="kashi">काशी</h1>
-    <div class="cue" aria-hidden="true">↓</div>
-
-    <svg class="skyline" viewBox="0 0 1200 190" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <g fill="#14101F" fill-opacity=".94">
-        <path d="M0 190v-56h52v-22l18-14 18 14v22h34V90h60v44h30V80l24-18 24 18v54h44v-20h64v20h36V86l22-16 22 16v48h40v-8h58v8h48v-24h66v24h34V84l20-15 20 15v50h58v-18h50v18h40V92h48v42h68v56H0Z"/>
-        <circle cx="88" cy="112" r="10"/><circle cx="440" cy="56" r="9"/>
-        <circle cx="838" cy="62" r="9"/><circle cx="222" cy="78" r="8"/>
-        <circle cx="1082" cy="84" r="8"/>
-      </g>
-      <g class="dt" stroke-opacity=".3" stroke="#F6C445">
-        <path d="M0 162h1200M0 174h1200M0 186h1200"/>
-      </g>
-    </svg>
+  <header>
+    <div class="mark" aria-hidden="true">
+      <span style="background:var(--tp)">TP</span><span style="background:var(--fn)">FN</span>
+      <span style="background:var(--fp)">FP</span><span style="background:var(--tn)">TN</span>
+    </div>
+    <div>
+      <h1>Precision, recall and F1</h1>
+      <p class="tag">Read the notes, then work through nine short numericals. Each answer is checked as you go, with the full working underneath.</p>
+    </div>
   </header>
 
-  <!-- ghats panorama: steps, chhatris, boats, birds -->
-  <svg class="pano rough" viewBox="0 0 1200 260" aria-hidden="true">
-    <!-- buildings -->
-    <g class="d">
-      <path d="M40 150V60h90v90M56 76h20v20H56M96 76h20v20H96M56 112h60"/>
-      <path d="M150 150V40h110v110M170 60h26v26h-26M214 60h26v26h-26M170 104h70v46"/>
-      <path d="M275 150V72h80v78M292 90h16v18h-16M322 90h16v18h-16"/>
-      <path d="M370 150V50h130v100M392 72h30v28h-30M448 72h30v28h-30M410 122h50v28"/>
-      <path d="M515 150V84h70v66M532 102h14v16h-14M556 102h14v16h-14"/>
-      <path d="M600 150V46h120v104M622 68h28v26h-28M672 68h28v26h-28M640 118h44v32"/>
-      <path d="M735 150V70h84v80M752 88h18v20h-18M786 88h18v20h-18"/>
-      <path d="M835 150V56h116v94M856 78h28v24h-28M904 78h28v24h-28M872 124h44v26"/>
-      <path d="M966 150V80h74v70M984 98h16v18h-16M1010 98h16v18h-16"/>
-      <path d="M1055 150V62h100v88M1076 84h24v24h-24M1116 84h24v24h-24"/>
-    </g>
-    <!-- chhatri domes -->
-    <g class="d">
-      <path d="M180 40c0-14 10-22 25-22s25 8 25 22M205 18v-8"/>
-      <path d="M630 46c0-16 12-24 30-24s30 8 30 24M660 22v-9"/>
-      <path d="M872 56c0-15 12-23 29-23s29 8 29 23M901 33v-9"/>
-      <path d="M395 50c0-12 10-19 22-19s22 7 22 19M417 31v-8"/>
-    </g>
-    <!-- the steps -->
-    <g class="d">
-      <path d="M0 154h1200M0 166h1200M0 178h1200M0 190h1200M0 202h1200"/>
-      <path d="M120 154v48M300 154v48M520 154v48M760 154v48M980 154v48"/>
-    </g>
-    <!-- umbrellas on the ghat -->
-    <g class="d">
-      <path d="M200 166c0-12 12-20 26-20s26 8 26 20zM226 166v22"/>
-      <path d="M660 178c0-12 12-20 26-20s26 8 26 20zM686 178v22"/>
-      <path d="M1010 166c0-12 12-20 26-20s26 8 26 20zM1036 166v22"/>
-    </g>
-    <!-- water -->
-    <g class="dt" stroke-opacity=".55">
-      <path d="M0 218c40-8 80 8 120 0s80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0"/>
-      <path d="M0 240c40-8 80 8 120 0s80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0 80-8 120 0 80 8 120 0"/>
-    </g>
-    <!-- boats -->
-    <g class="d">
-      <path d="M150 226h90c-6 14-18 20-45 20s-39-6-45-20ZM195 226v-24M195 208l24 8-24 8"/>
-      <path d="M560 232h74c-5 12-15 17-37 17s-32-5-37-17ZM597 232v-18M580 220l-14-10M614 220l14-10"/>
-      <path d="M900 224h100c-7 15-20 21-50 21s-43-6-50-21ZM950 224v-26M950 206l26 9-26 9"/>
-    </g>
-    <!-- birds -->
-    <g class="dt">
-      <path d="M330 34c6-6 10-6 14 0 4-6 8-6 14 0"/>
-      <path d="M760 26c5-5 9-5 12 0 3-5 7-5 12 0"/>
-      <path d="M1100 40c5-5 9-5 12 0 3-5 7-5 12 0"/>
-    </g>
-  </svg>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-notes" aria-controls="view-notes" aria-selected="true" type="button">Notes</button>
+    <button role="tab" id="tab-practice" aria-controls="view-practice" aria-selected="false" type="button">Practice</button>
+  </nav>
 
-  <!-- ══════════ DOODLE GRID ══════════ -->
-  <div class="grid">
+  <!-- ================= NOTES ================= -->
+  <article id="view-notes" role="tabpanel" aria-labelledby="tab-notes" class="notes">
 
-    <!-- temple -->
-    <div class="cell gold"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M50 8v6"/><circle class="d" cx="50" cy="19" r="4"/>
-      <path class="d" d="M40 27c0-4 4-6 10-6s10 2 10 6M36 33h28"/>
-      <path class="d" d="M28 72c0-24 8-40 22-52 14 12 22 28 22 52"/>
-      <path class="dt" d="M35 58h30M33 66h34"/>
-      <path class="d" d="M22 76h56v10H22zM16 88h68v8H16z"/>
-      <path class="d" d="M43 96v-9a7 7 0 0 1 14 0v9"/>
-    </svg></div>
-
-    <!-- diya -->
-    <div class="cell gold"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M50 20c8 11 12 16 12 23a12 12 0 0 1-24 0c0-7 4-12 12-23Z"/>
-      <path class="dt" d="M50 34c4 6 6 8 6 11a6 6 0 0 1-12 0c0-3 2-5 6-11Z"/>
-      <path class="d" d="M50 58c-6 0-9-3-9-3"/>
-      <path class="d" d="M16 62h68c-4 16-17 24-34 24s-30-8-34-24Z"/>
-      <path class="dt" d="M16 62c8 4 22 6 34 6s26-2 34-6M26 78c8 5 40 5 48 0"/>
-    </svg></div>
-
-    <!-- bell -->
-    <div class="cell gold"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M50 8v8"/><circle class="d" cx="50" cy="20" r="5"/>
-      <path class="d" d="M50 25c-16 4-22 20-24 38-1 8-4 12-6 14h60c-2-2-5-6-6-14-2-18-8-34-24-38Z"/>
-      <path class="d" d="M20 77h60"/>
-      <path class="d" d="M50 77v10"/><circle class="fillc" cx="50" cy="90" r="5"/>
-      <path class="dt" d="M36 46c2-10 6-16 14-19"/>
-    </svg></div>
-
-    <!-- trishul -->
-    <div class="cell gold"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M50 24v70"/>
-      <path class="d" d="M50 24c0-8 4-14 4-14s4 6 4 14"/>
-      <path class="d" d="M58 24c0-14 6-18 6-18v34"/>
-      <path class="d" d="M42 24c0-14-6-18-6-18v34"/>
-      <path class="d" d="M36 40h28"/>
-      <path class="dt" d="M44 52h12M44 62h12"/>
-    </svg></div>
-
-    <!-- conch -->
-    <div class="cell gold"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M74 24c-10-6-24-2-32 10-8 12-10 26-4 36 6 10 20 14 32 8"/>
-      <path class="d" d="M70 78c8-4 14-12 12-20-2-8-10-12-16-8"/>
-      <path class="dt" d="M52 40c-6 8-8 18-4 26 4 8 12 10 18 8"/>
-      <path class="dt" d="M58 46c-4 6-5 13-2 18"/>
-      <path class="d" d="M74 24c6 2 10 6 10 10"/>
-    </svg></div>
-
-    <!-- marigold garland -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="dt" d="M8 24c14 34 28 48 42 48s28-14 42-48"/>
-      <g class="d">
-        <circle cx="12" cy="32" r="7"/><circle cx="24" cy="50" r="7"/><circle cx="38" cy="63" r="7"/>
-        <circle cx="54" cy="66" r="7"/><circle cx="69" cy="56" r="7"/><circle cx="81" cy="40" r="7"/>
-        <circle cx="89" cy="24" r="7"/>
-      </g>
-      <g class="dt">
-        <path d="M12 25v14M5 32h14M24 43v14M17 50h14M38 56v14M31 63h14M54 59v14M47 66h14M69 49v14M62 56h14M81 33v14M74 40h14"/>
-      </g>
-    </svg></div>
-
-    <!-- cow -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M22 62c0-14 6-22 20-24 8-1 14 2 20 2 8 0 12-6 18-6"/>
-      <path class="d" d="M80 34c6 0 10 4 10 10 0 6-4 10-10 12"/>
-      <path class="d" d="M80 56c-4 4-10 6-18 6"/>
-      <path class="d" d="M22 62v22M36 66v18M62 62v22M76 60v24"/>
-      <path class="d" d="M20 46c-6-2-10 2-10 6M42 40c0-8 4-12 4-12"/>
-      <circle class="fillc" cx="86" cy="42" r="2.4"/>
-      <path class="dt" d="M84 52c3 2 6 2 8 0M76 32c-4-6-2-10 2-10s6 4 4 10"/>
-      <path class="d" d="M22 66c-8 4-8 14-4 18"/>
-    </svg></div>
-
-    <!-- boat -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M12 58h76c-6 18-20 26-38 26S18 76 12 58Z"/>
-      <path class="d" d="M50 58V22"/>
-      <path class="d" d="M50 26l26 12-26 12z"/>
-      <path class="dt" d="M12 58c10 5 24 7 38 7s28-2 38-7"/>
-      <path class="dt" d="M6 90c8-4 14 4 22 0s14-4 22 0 14 4 22 0 14-4 22 0"/>
-    </svg></div>
-
-    <!-- golgappa — hers -->
-    <div class="cell hers"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M18 44a26 26 0 0 1 52 0c0 18-12 30-26 30S18 62 18 44Z"/>
-      <path class="d" d="M30 34c6-6 18-8 26-2"/>
-      <path class="dt" d="M28 50c3-3 6-3 9 0M46 56c3-3 6-3 9 0M38 42c3-3 6-3 9 0M52 44c2-2 5-2 7 0"/>
-      <path class="d" d="M62 66h28c-2 14-8 20-14 20s-12-6-14-20Z"/>
-      <path class="dt" d="M62 66c4 3 10 4 14 4s10-1 14-4"/>
-      <path class="dt" d="M76 66V52c0-4 4-6 8-4"/>
-    </svg></div>
-
-    <!-- jalebi — hers -->
-    <div class="cell hers"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M50 12c-21 0-38 17-38 38s17 38 38 38 38-17 38-38"/>
-      <path class="d" d="M88 50c0-15-12-27-27-27S34 35 34 50s10 25 22 25 20-9 20-20"/>
-      <path class="d" d="M76 55c0-8-7-14-15-14s-14 6-14 14 5 12 11 12"/>
-      <path class="dt" d="M58 67c4 0 7-3 7-7"/>
-    </svg></div>
-
-    <!-- lassi kulhad -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M26 32h48l-6 54H32z"/>
-      <path class="d" d="M26 32c6 4 18 6 24 6s18-2 24-6"/>
-      <path class="d" d="M32 24c4-6 10-8 18-8s14 2 18 8c-4 5-11 7-18 7s-14-2-18-7Z"/>
-      <path class="dt" d="M38 46c2 3 6 4 9 2M56 58c3 2 7 1 9-2M40 68c2 3 6 4 9 2"/>
-      <path class="dt" d="M50 16V6M44 10l6-6 6 6"/>
-    </svg></div>
-
-    <!-- paan leaf -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M50 88C26 74 14 56 14 40 14 26 24 16 36 16c7 0 11 4 14 8 3-4 7-8 14-8 12 0 22 10 22 24 0 16-12 34-36 48Z"/>
-      <path class="d" d="M50 88V26"/>
-      <path class="dt" d="M50 40 32 30M50 40l18-10M50 56 30 44M50 56l20-12M50 72 36 60M50 72l14-12"/>
-    </svg></div>
-
-    <!-- thandai -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M32 20h36l-5 66H37z"/>
-      <path class="d" d="M33 38h34"/>
-      <path class="d" d="M58 20 74 6"/>
-      <path class="dt" d="M40 52c3-2 6-2 8 1M52 64c3-2 6-2 8 1M42 72c3-2 6-2 8 1"/>
-      <g class="dt"><path d="M22 30c4-4 8-4 10 0-4 4-8 4-10 0ZM70 60c4-4 8-4 10 0-4 4-8 4-10 0Z"/></g>
-      <path class="d" d="M30 90h40"/>
-    </svg></div>
-
-    <!-- cake slice — hers -->
-    <div class="cell hers"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M18 78 50 26l32 52z"/>
-      <path class="d" d="M28 62h44M23 70h54"/>
-      <path class="d" d="M18 78h64v8H18z"/>
-      <path class="d" d="M50 26c-5-4-4-10 0-14 4 4 5 10 0 14Z"/>
-      <path class="dt" d="M38 46c3-2 6-2 8 1M54 46c3-2 6-2 8 1"/>
-    </svg></div>
-
-    <!-- kurkure packet — hers -->
-    <div class="cell hers"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M30 26c14-4 26-4 40 0 4 16 4 32 0 48-14 4-26 4-40 0-4-16-4-32 0-48Z"/>
-      <path class="d" d="M30 26 20 18l4 10-4 10 10-6M70 26l10-8-4 10 4 10-10-6"/>
-      <path class="d" d="M30 74l-10 8 4-10-4-10 10 6M70 74l10 8-4-10 4-10-10 6"/>
-      <path class="dt" d="M40 44h20M40 54h20"/>
-      <g class="d"><path d="M14 60c4-3 7-1 6 3M86 52c-4-3-7-1-6 3"/></g>
-    </svg></div>
-
-    <!-- steps + water -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M6 22h88M6 36h88M6 50h88M6 64h88"/>
-      <path class="d" d="M30 22v42M62 22v42"/>
-      <path class="dt" d="M6 78c8-5 14 5 22 0s14-5 22 0 14 5 22 0 14-5 22 0M6 92c8-5 14 5 22 0s14-5 22 0 14 5 22 0 14-5 22 0"/>
-    </svg></div>
-
-    <!-- kachori + katori -->
-    <div class="cell"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M10 46a20 20 0 0 1 40 0c0 12-9 20-20 20s-20-8-20-20Z"/>
-      <path class="dt" d="M18 44c3-3 6-3 9 0M32 52c3-3 6-3 9 0M26 36c3-3 6-3 9 0"/>
-      <path class="d" d="M52 54h40c-3 18-10 26-20 26s-17-8-20-26Z"/>
-      <path class="dt" d="M52 54c6 4 13 5 20 5s14-1 20-5"/>
-      <path class="d" d="M70 82v10"/>
-      <path class="dt" d="M62 92h18"/>
-    </svg></div>
-
-    <!-- incense -->
-    <div class="cell gold"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M38 88h36c0-6-4-10-18-10s-18 4-18 10Z"/>
-      <path class="d" d="M50 78V40M42 78V44M58 78V44"/>
-      <path class="dt" d="M50 36c6-6 0-12 4-18M42 40c5-6-1-11 3-16M58 40c5-6-1-11 3-16"/>
-      <path class="dt" d="M30 60c-6-4-8-10-4-14M70 60c6-4 8-10 4-14"/>
-    </svg></div>
-
-    <!-- sun over water -->
-    <div class="cell gold"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <circle class="d" cx="50" cy="44" r="18"/>
-      <g class="dt"><path d="M50 16V6M50 82v-4M22 44H8M92 44H78M28 22 20 14M72 22l8-8M28 66l-8 8M72 66l8 8"/></g>
-      <path class="d" d="M6 80c8-5 14 5 22 0s14-5 22 0 14 5 22 0 14-5 22 0"/>
-      <path class="dt" d="M6 92c8-5 14 5 22 0s14-5 22 0 14 5 22 0 14-5 22 0"/>
-    </svg></div>
-
-    <!-- heart -->
-    <div class="cell hers"><svg class="rough" viewBox="0 0 100 100" aria-hidden="true">
-      <path class="d" d="M50 84C28 68 12 54 12 38c0-12 9-20 20-20 8 0 14 5 18 11 4-6 10-11 18-11 11 0 20 8 20 20 0 16-16 30-38 46Z"/>
-      <path class="dt" d="M28 34c0-6 4-10 9-10"/>
-    </svg></div>
-  </div>
-
-  <!-- diya row -->
-  <div class="row" aria-hidden="true">
-    <svg class="rough" viewBox="0 0 100 60"><path class="d" d="M50 2c7 9 10 13 10 19a10 10 0 0 1-20 0c0-6 3-10 10-19Z"/><path class="d" d="M14 30h72c-4 16-18 24-36 24S18 46 14 30Z"/><path class="dt" d="M14 30c9 4 23 6 36 6s27-2 36-6"/></svg>
-    <svg class="rough" viewBox="0 0 100 60"><path class="d" d="M50 2c7 9 10 13 10 19a10 10 0 0 1-20 0c0-6 3-10 10-19Z"/><path class="d" d="M14 30h72c-4 16-18 24-36 24S18 46 14 30Z"/><path class="dt" d="M14 30c9 4 23 6 36 6s27-2 36-6"/></svg>
-    <svg class="rough" viewBox="0 0 100 60"><path class="d" d="M50 2c7 9 10 13 10 19a10 10 0 0 1-20 0c0-6 3-10 10-19Z"/><path class="d" d="M14 30h72c-4 16-18 24-36 24S18 46 14 30Z"/><path class="dt" d="M14 30c9 4 23 6 36 6s27-2 36-6"/></svg>
-    <svg class="rough" viewBox="0 0 100 60"><path class="d" d="M50 2c7 9 10 13 10 19a10 10 0 0 1-20 0c0-6 3-10 10-19Z"/><path class="d" d="M14 30h72c-4 16-18 24-36 24S18 46 14 30Z"/><path class="dt" d="M14 30c9 4 23 6 36 6s27-2 36-6"/></svg>
-    <svg class="rough" viewBox="0 0 100 60"><path class="d" d="M50 2c7 9 10 13 10 19a10 10 0 0 1-20 0c0-6 3-10 10-19Z"/><path class="d" d="M14 30h72c-4 16-18 24-36 24S18 46 14 30Z"/><path class="dt" d="M14 30c9 4 23 6 36 6s27-2 36-6"/></svg>
-  </div>
-
-  <!-- ══════════ LETTER ══════════ -->
-  <div class="gate">
-    <button class="diya-btn" id="openBtn" aria-expanded="false" aria-controls="letter" aria-label="Light the diya">
-      <span class="bloom" aria-hidden="true"></span>
-      <svg class="rough" viewBox="0 0 180 130" aria-hidden="true">
-        <!-- flame, hidden until lit -->
-        <g class="flame">
-          <path class="d" d="M90 8c11 17 17 24 17 34a17 17 0 0 1-34 0c0-10 6-17 17-34Z"/>
-          <path class="dt" d="M90 28c6 9 9 13 9 18a9 9 0 0 1-18 0c0-5 3-9 9-18Z"/>
-        </g>
-        <!-- wick -->
-        <path class="d" d="M90 62c-9 0-14-5-14-5"/>
-        <!-- the lamp -->
-        <path class="d" d="M14 66h152c-8 30-32 46-76 46S22 96 14 66Z"/>
-        <path class="dt" d="M14 66c20 8 48 12 76 12s56-4 76-12"/>
-        <path class="dt" d="M38 96c16 9 88 9 104 0"/>
-        <!-- oil -->
-        <path class="dt" d="M34 72c14 5 34 7 56 7s42-2 56-7"/>
-      </svg>
-    </button>
-
-    <div class="letter" id="letter">
-      <div class="sheet">
-        <p class="to">मेरी चुभू टुब्बू,</p>
-
-        <p class="lead">Happiest national girlfriend day my girl, my friend, my girlfriend.</p>
-
-        <p>You are the best gf, i am so happy and lucky to have you along my side and knowing you are my girlfriend and i am your man. This whole varanasi, lights, and all vibe reminds me so much of last year diwali time w you. I loved it sooo sooo muchhh it's my fav time of year and i loved it when we shared it. I miss you a lot and i miss that time a lot.</p>
-
-        <p class="love">I love youuuu max golu molu chubee</p>
-
-        <p>Study well and take care of my santa banta pinti, i got them and you</p>
-
-        <p class="ps">Ps — still didn't get the name of the lipgloss</p>
-
-        <p class="sign">— तुम्हारा,<br>मन्नू पन्नू</p>
+    <section>
+      <h2><span class="sn">1</span>The confusion matrix</h2>
+      <p>Precision, recall and the F1 score are all built from four counts in a classic machine-learning tool called the <em>confusion matrix</em>. Take a model designed to detect spam emails. Every email it sees lands in exactly one of four cells.</p>
+      <div class="cm cm-key">
+        <div class="h"></div><div class="h">Predicted spam</div><div class="h">Predicted not spam</div>
+        <div class="r">Actually spam</div>
+        <div class="kc c-tp"><small>True positive (TP)</small><span>Says spam, and it is spam. Correct.</span></div>
+        <div class="kc c-fn"><small>False negative (FN)</small><span>Says not spam, but it is spam. Wrong (Type II error).</span></div>
+        <div class="r">Actually clean</div>
+        <div class="kc c-fp"><small>False positive (FP)</small><span>Says spam, but it is clean. Wrong (Type I error).</span></div>
+        <div class="kc c-tn"><small>True negative (TN)</small><span>Says not spam, and it is clean. Correct.</span></div>
       </div>
+      <p>The three metrics below look at the same model from different angles.</p>
+    </section>
+
+    <section>
+      <h2><span class="sn">2</span>Precision: quality of positive predictions</h2>
+      <p>Precision measures how reliable the model is when it predicts the positive class.</p>
+      <p class="qline">When the model predicts an email is spam, how often is it actually right?</p>
+      <div class="eq"><span>Precision =</span><span class="frac frac-lg"><span>TP</span><span>TP + FP</span></span></div>
+      <p><b>When it matters most:</b> when the cost of a false positive is high. A spam filter needs high precision, because sending an important work email (a false positive) to the spam folder is a major problem.</p>
+    </section>
+
+    <section>
+      <h2><span class="sn">3</span>Recall (sensitivity): how many positives are found</h2>
+      <p>Recall measures the model’s ability to find all the positive cases in the dataset.</p>
+      <p class="qline">Out of all the actual spam emails in the inbox, how many did the model manage to catch?</p>
+      <div class="eq"><span>Recall =</span><span class="frac frac-lg"><span>TP</span><span>TP + FN</span></span></div>
+      <p><b>When it matters most:</b> when the cost of a false negative is high. In cancer screening or fraud detection, letting a sick patient or a thief slip by undetected (a false negative) is dangerous. You want high recall, even if it means raising a few false alarms.</p>
+    </section>
+
+    <section>
+      <h2><span class="sn">4</span>F1 score: the balance</h2>
+      <p>Most problems face a <em>precision–recall trade-off</em>. Tune a model to catch absolutely everything (high recall) and it will make more mistakes (low precision). Make it so strict that it only predicts positive when it is certain (high precision) and it will miss many cases (low recall).</p>
+      <p>The F1 score balances the two. It is the <em>harmonic</em> mean of precision and recall rather than the ordinary average, so if either one is very low the F1 score collapses with it.</p>
+      <div class="eq"><span>F1 = 2 ×</span><span class="frac frac-lg"><span>Precision × Recall</span><span>Precision + Recall</span></span></div>
+      <p>Substituting the two formulas above gives a version that works straight from the counts, which is handy for numericals:</p>
+      <div class="eq"><span>F1 =</span><span class="frac frac-lg"><span>2·TP</span><span>2·TP + FP + FN</span></span></div>
+      <div class="example">
+        <p><b>Worked example.</b> Out of 200 emails, the model has TP = 45, FP = 5, FN = 15 and TN = 135.</p>
+        <p>Precision = 45 / 50 = 0.90. Recall = 45 / 60 = 0.75.</p>
+        <p>F1 = 2 × 0.90 × 0.75 / (0.90 + 0.75) = 1.35 / 1.65 ≈ 0.818. With the shortcut: 90 / (90 + 5 + 15) = 90 / 110 ≈ 0.818.</p>
+        <p>The plain average would have been 0.825. The harmonic mean sits a little lower, pulled toward the weaker of the two.</p>
+      </div>
+      <p>True negatives appear in none of these formulas. Precision, recall and F1 only look at how the model handles the positive class, which is why they are preferred over plain accuracy when positives are rare.</p>
+    </section>
+
+    <section>
+      <h2><span class="sn">5</span>Direct comparison</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Focuses on</th><th>Key risk it minimises</th><th>Real-world example</th></tr></thead>
+          <tbody>
+            <tr><td><b>Precision</b></td><td>Accuracy of positive guesses</td><td>False positives (false alarms)</td><td>Spam filter: avoid blocking real emails.</td></tr>
+            <tr><td><b>Recall</b></td><td>Completeness of positive capture</td><td>False negatives (missed cases)</td><td>Medical test: avoid missing a disease.</td></tr>
+            <tr><td><b>F1 score</b></td><td>A healthy balance of the two</td><td>Imbalance between precision and recall</td><td>E-commerce fraud: catch thieves without blocking real buyers.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="notes-end">
+      <button class="btn" id="goPractice" type="button">Start practising</button>
+      <button class="btn ghost" id="openNotes" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Download notes as PDF
+      </button>
     </div>
+  </article>
+
+  <!-- ================= PRACTICE ================= -->
+  <div id="view-practice" role="tabpanel" aria-labelledby="tab-practice" hidden>
+    <details class="formulas">
+      <summary>Formulas</summary>
+      <div class="fgrid">
+        <div class="f"><b>Precision</b><span class="frac"><span>TP</span><span>TP + FP</span></span></div>
+        <div class="f"><b>Recall</b><span class="frac"><span>TP</span><span>TP + FN</span></span></div>
+        <div class="f"><b>F1</b>2 × <span class="frac"><span>P × R</span><span>P + R</span></span></div>
+        <div class="f"><b>F1 from counts</b><span class="frac"><span>2·TP</span><span>2·TP + FP + FN</span></span></div>
+      </div>
+    </details>
+
+    <div class="rail" id="rail">
+      <div class="rail-top"><span>Question <b id="qpos">1</b> of <span id="qtot">0</span></span><span><b id="scoreNow">0</b> of <span id="fieldTot">0</span> answers right</span></div>
+      <div class="bar"><div class="fill" id="fill"></div></div>
+    </div>
+
+    <main id="stage"></main>
+
+    <footer>Answers within ±0.01 count as correct. Decimals, percentages (75%) and fractions (45/60) are all accepted.</footer>
   </div>
 </div>
 
+<script>const NOTES_PDF_B64="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";</script>
 <script>
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// m = matrix [TP, FN, FP, TN] with labels; ask = [{label, val, kind:'ratio'|'count'}]
+const Q = [
+  { title:"Spam filter",
+    scenario:"A spam filter is tested on 200 emails. Here is how it did.",
+    labels:{pos:"Spam", neg:"Clean"}, m:{tp:45, fn:15, fp:5, tn:135},
+    ask:[{l:"Precision",v:45/50},{l:"Recall",v:45/60},{l:"F1 score",v:2*45/(90+5+15)}],
+    work:[
+      "Precision = 45 / (45 + 5) = 45 / 50 = <b>0.90</b>",
+      "Recall = 45 / (45 + 15) = 45 / 60 = <b>0.75</b>",
+      "F1 = 2 × 0.90 × 0.75 / (0.90 + 0.75) = 1.35 / 1.65 ≈ <b>0.818</b>",
+      "<span class='take'>Few false alarms, but a quarter of the spam still gets through.</span>"]},
 
-/* ── sun rises with scroll ── */
-let raf;
-function dawn(){
-  const max = document.documentElement.scrollHeight - innerHeight;
-  document.documentElement.style.setProperty('--dawn',
-    (max > 0 ? Math.min(1, scrollY / max) : 0).toFixed(4));
-  raf = null;
+  { title:"Disease screening",
+    scenario:"A screening test is run on 1,000 patients. Only 20 actually have the disease.",
+    labels:{pos:"Sick", neg:"Healthy"}, m:{tp:18, fn:2, fp:32, tn:948},
+    ask:[{l:"Precision",v:18/50},{l:"Recall",v:18/20},{l:"F1 score",v:36/(36+32+2)}],
+    work:[
+      "Precision = 18 / (18 + 32) = 18 / 50 = <b>0.36</b>",
+      "Recall = 18 / (18 + 2) = 18 / 20 = <b>0.90</b>",
+      "F1 = 2 × 0.36 × 0.90 / (0.36 + 0.90) = 0.648 / 1.26 ≈ <b>0.514</b>",
+      "<span class='take'>This is what you want from a screening test: it misses almost no one, at the cost of many false alarms that a follow-up test can clear.</span>"]},
+
+  { title:"Card fraud",
+    scenario:"A fraud model reviews 1,000 card transactions.",
+    labels:{pos:"Fraud", neg:"Genuine"}, m:{tp:30, fn:30, fp:10, tn:930},
+    ask:[{l:"Precision",v:0.75},{l:"Recall",v:0.5},{l:"F1 score",v:0.6}],
+    work:[
+      "Precision = 30 / (30 + 10) = 30 / 40 = <b>0.75</b>",
+      "Recall = 30 / (30 + 30) = 30 / 60 = <b>0.50</b>",
+      "F1 = 2 × 0.75 × 0.50 / (0.75 + 0.50) = 0.75 / 1.25 = <b>0.60</b>",
+      "<span class='take'>When it flags fraud it is usually right, but half the fraud goes unnoticed.</span>"]},
+
+  { title:"Reading it from words",
+    scenario:"A spam filter flags 80 emails as spam. 60 of those really are spam. The inbox contains 100 spam emails in total.",
+    ask:[{l:"Precision",v:0.75},{l:"Recall",v:0.6},{l:"F1 score",v:0.9/1.35}],
+    work:[
+      "First build the counts: TP = 60, FP = 80 − 60 = 20, FN = 100 − 60 = 40.",
+      "Precision = 60 / 80 = <b>0.75</b>",
+      "Recall = 60 / 100 = <b>0.60</b>",
+      "F1 = 2 × 0.75 × 0.60 / (0.75 + 0.60) = 0.90 / 1.35 ≈ <b>0.667</b>"]},
+
+  { title:"Why a harmonic mean?",
+    scenario:"A model has precision 0.9 but recall of only 0.1.",
+    ask:[{l:"F1 score",v:0.18},{l:"Plain average of P and R",v:0.5}],
+    work:[
+      "F1 = 2 × 0.9 × 0.1 / (0.9 + 0.1) = 0.18 / 1.0 = <b>0.18</b>",
+      "Plain average = (0.9 + 0.1) / 2 = <b>0.50</b>",
+      "<span class='take'>The plain average makes this model look half-decent. F1 drops toward the weak score, which is the point: a model that misses 90% of cases is not a good model.</span>"]},
+
+  { title:"The over-cautious model",
+    scenario:"A model predicts “positive” only 5 times, and all 5 are correct. There are 100 actual positives in the data.",
+    ask:[{l:"Precision",v:1},{l:"Recall",v:0.05},{l:"F1 score",v:0.1/1.05}],
+    work:[
+      "TP = 5, FP = 0, FN = 100 − 5 = 95.",
+      "Precision = 5 / (5 + 0) = <b>1.00</b>",
+      "Recall = 5 / (5 + 95) = <b>0.05</b>",
+      "F1 = 2 × 1.00 × 0.05 / (1.00 + 0.05) = 0.10 / 1.05 ≈ <b>0.095</b>",
+      "<span class='take'>Perfect precision on its own means very little.</span>"]},
+
+  { title:"Working backwards",
+    scenario:"A model makes 50 positive predictions. Its precision is 0.8 and its recall is 0.5.",
+    ask:[{l:"False positives (FP)",v:10,count:true},{l:"False negatives (FN)",v:40,count:true}],
+    work:[
+      "Positive predictions = TP + FP = 50, and precision = TP / 50 = 0.8, so TP = <b>40</b>.",
+      "FP = 50 − 40 = <b>10</b>",
+      "Recall = TP / (TP + FN) = 0.5, so TP + FN = 40 / 0.5 = 80 actual positives.",
+      "FN = 80 − 40 = <b>40</b>"]},
+
+  { title:"Lowering the threshold",
+    scenario:"Model A gives TP = 70, FP = 30, FN = 30, so its precision, recall and F1 are all 0.70. Model B is the same model with a lower threshold.",
+    labels:{pos:"Positive", neg:"Negative"}, m:{tp:90, fn:10, fp:110, tn:790}, mlabel:"Model B",
+    ask:[{l:"Precision (B)",v:0.45},{l:"Recall (B)",v:0.9},{l:"F1 score (B)",v:0.6}],
+    work:[
+      "Precision = 90 / (90 + 110) = 90 / 200 = <b>0.45</b>",
+      "Recall = 90 / (90 + 10) = 90 / 100 = <b>0.90</b>",
+      "F1 = 2 × 0.45 × 0.90 / (0.45 + 0.90) = 0.81 / 1.35 = <b>0.60</b>",
+      "<span class='take'>Recall went up from 0.70 to 0.90, but precision fell so far that F1 dropped from 0.70 to 0.60. On F1, Model A is the better balance.</span>"]},
+
+  { title:"The counting shortcut",
+    scenario:"TP = 25, FP = 15, FN = 10. Find F1 straight from the counts.",
+    labels:{pos:"Positive", neg:"Negative"}, m:{tp:25, fn:10, fp:15, tn:null},
+    ask:[{l:"F1 score",v:50/75}],
+    work:[
+      "F1 = 2·TP / (2·TP + FP + FN) = 50 / (50 + 15 + 10) = 50 / 75 ≈ <b>0.667</b>",
+      "Check the long way: P = 25/40 = 0.625, R = 25/35 ≈ 0.714, and 2 × 0.625 × 0.714 / 1.339 ≈ 0.667.",
+      "<span class='take'>TN is not needed for any of these metrics.</span>"]}
+];
+
+const fieldTotal = Q.reduce((a,q)=>a+q.ask.length,0);
+let idx=0, score=0, results=Q.map(()=>null); // results[i] = array of booleans
+
+const stage=document.getElementById('stage'), fill=document.getElementById('fill');
+document.getElementById('qtot').textContent=Q.length;
+document.getElementById('fieldTot').textContent=fieldTotal;
+
+function parseAns(raw){
+  let s=String(raw).trim().replace(/,/g,'').replace(/\s+/g,'');
+  if(!s) return NaN;
+  let pct=false;
+  if(s.endsWith('%')){pct=true; s=s.slice(0,-1);}
+  let v;
+  if(s.includes('/')){
+    const [a,b]=s.split('/'); v=parseFloat(a)/parseFloat(b);
+  } else v=parseFloat(s);
+  if(pct) v=v/100;
+  return v;
 }
-addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(dawn); }, {passive:true});
-addEventListener('resize', dawn);
-dawn();
+function isRight(raw,a){
+  let v=parseAns(raw);
+  if(!isFinite(v)) return false;
+  if(a.count) return Math.abs(v-a.v)<1e-9;
+  if(Math.abs(v-a.v)<=0.01) return true;
+  if(v>1 && Math.abs(v/100-a.v)<=0.01) return true; // typed 75 for 75%
+  return false;
+}
+function fmt(a){ return a.count ? String(a.v) : (Math.round(a.v*1000)/1000).toString(); }
 
-/* ── doodles draw themselves in ── */
-if (!reduced && 'IntersectionObserver' in window){
-  const shapes = [...document.querySelectorAll('.cell svg, .pano, .big-temple, .row svg')]
-    .map(s => [...s.querySelectorAll('path,circle,ellipse,line,polyline')]);
+function matrixHTML(q){
+  if(!q.m) return '';
+  const L=q.labels, m=q.m, tn=(m.tn===null)?'–':m.tn;
+  return `<div class="cm" role="table" aria-label="Confusion matrix${q.mlabel?' for '+q.mlabel:''}">
+    <div class="h">${q.mlabel||''}</div><div class="h">Predicted ${L.pos.toLowerCase()}</div><div class="h">Predicted ${L.neg.toLowerCase()}</div>
+    <div class="r">Actually ${L.pos.toLowerCase()}</div>
+    <div class="cell c-tp"><small>TP</small><strong>${m.tp}</strong></div>
+    <div class="cell c-fn"><small>FN</small><strong>${m.fn}</strong></div>
+    <div class="r">Actually ${L.neg.toLowerCase()}</div>
+    <div class="cell c-fp"><small>FP</small><strong>${m.fp}</strong></div>
+    <div class="cell c-tn"><small>TN</small><strong>${tn}</strong></div>
+  </div>`;
+}
 
-  shapes.flat().forEach(el => {
-    try{
-      const len = el.getTotalLength ? el.getTotalLength() : 0;
-      if (!len) return;
-      el.dataset.len = len;
-      el.style.strokeDasharray = len;
-      el.style.strokeDashoffset = len;
-    }catch(e){}
+function render(){
+  const q=Q[idx];
+  document.getElementById('rail').style.display='';
+  document.getElementById('qpos').textContent=idx+1;
+  document.getElementById('scoreNow').textContent=score;
+  fill.style.width=(idx/Q.length*100)+'%';
+  const done=results[idx]!==null;
+  const unitHint=q.ask.some(a=>!a.count)?'<p class="hint">Give ratios as decimals to 2–3 places, e.g. 0.75.</p>':'';
+  stage.innerHTML=`
+  <section class="card">
+    <div class="qhead"><h2 class="qtitle">${q.title}</h2><span class="qnum">${idx+1} / ${Q.length}</span></div>
+    <p class="scenario">${q.scenario}</p>
+    ${matrixHTML(q)}
+    <p class="ask">Work out:</p>
+    <div class="answers">
+      ${q.ask.map((a,i)=>`<div class="ans"><label for="a${i}">${a.l}</label>
+        <input id="a${i}" inputmode="decimal" autocomplete="off" ${done?'disabled':''}>
+        <div class="fb" id="fb${i}" aria-live="polite"></div></div>`).join('')}
+    </div>
+    ${unitHint}
+    <div class="working" id="working">${q.work.map(w=>`<p>${w}</p>`).join('')}</div>
+    <div class="foot">
+      ${idx>0?'<button class="btn ghost" id="prev" type="button">Back</button>':''}
+      <span class="score-mini sp"></span>
+      <button class="btn ghost" id="reveal" type="button">Show working</button>
+      <button class="btn" id="check" type="button">Check answers</button>
+    </div>
+  </section>`;
+  if(done) showMarks(results[idx], true);
+  const first=document.getElementById('a0'); if(first && !done) first.focus({preventScroll:true});
+  stage.querySelectorAll('input').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter') document.getElementById('check').click();}));
+  document.getElementById('check').addEventListener('click', onCheck);
+  document.getElementById('reveal').addEventListener('click',()=>document.getElementById('working').classList.toggle('show'));
+  const p=document.getElementById('prev'); if(p) p.addEventListener('click',()=>{idx--;render();});
+}
+
+function showMarks(marks, restore){
+  const q=Q[idx];
+  q.ask.forEach((a,i)=>{
+    const inp=document.getElementById('a'+i), fb=document.getElementById('fb'+i);
+    if(restore && inp.dataset.v===undefined) inp.value=(results[idx].vals||[])[i]||'';
+    inp.disabled=true;
+    inp.classList.add(marks[i]?'ok':'no');
+    fb.className='fb '+(marks[i]?'ok':'no');
+    fb.textContent=marks[i]?'Correct':`Answer: ${fmt(a)}`;
   });
-
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      const parts = [...e.target.querySelectorAll('path,circle,ellipse,line,polyline')];
-      parts.forEach((el, i) => {
-        if (!el.dataset.len) return;
-        el.style.transition = 'stroke-dashoffset ' + (0.5 + Math.random()*0.4).toFixed(2) +
-                              's ease ' + (i * 0.055).toFixed(2) + 's';
-        el.style.strokeDashoffset = 0;
-      });
-      io.unobserve(e.target);
-    });
-  }, {threshold:.25});
-
-  document.querySelectorAll('.cell svg, .pano, .big-temple, .row svg').forEach(s => io.observe(s));
+  document.getElementById('working').classList.add('show');
+  const c=document.getElementById('check');
+  c.textContent= idx<Q.length-1 ? 'Next question' : 'See my score';
+  c.removeEventListener('click',onCheck);
+  c.addEventListener('click',next);
+  document.getElementById('reveal').style.display='none';
 }
 
-/* ── letter ── */
-const btn = document.getElementById('openBtn');
-const letter = document.getElementById('letter');
-let isLit = false;
-btn.addEventListener('click', () => {
-  if (isLit) return;
-  isLit = true;
-  btn.classList.add('lit');
-  btn.setAttribute('aria-expanded','true');
-  document.body.classList.add('lit');   /* sun comes all the way up */
+function onCheck(){
+  const q=Q[idx];
+  const vals=q.ask.map((a,i)=>document.getElementById('a'+i).value);
+  if(vals.every(v=>!v.trim())){ document.getElementById('a0').focus(); return; }
+  const marks=q.ask.map((a,i)=>isRight(vals[i],a));
+  marks.vals=vals;
+  results[idx]=marks;
+  score=results.reduce((s,r)=>s+(r?r.filter(Boolean).length:0),0);
+  document.getElementById('scoreNow').textContent=score;
+  showMarks(marks,false);
+  document.getElementById('check').focus({preventScroll:true});
+}
 
-  /* a few more lamps go out onto the river */
-  for (let i=0;i<6;i++){
-    const l = document.createElement('i');
-    l.style.animationDelay = (-Math.random()*26)+'s';
-    l.style.bottom = (12+Math.random()*26)+'px';
-    river.appendChild(l);
-  }
+function next(){
+  if(idx<Q.length-1){ idx++; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else finish();
+}
 
-  setTimeout(() => {
-    letter.classList.add('open');
-    setTimeout(() => letter.scrollIntoView({behavior: reduced ? 'auto':'smooth', block:'start'}), 240);
-  }, reduced ? 0 : 900);
+function verdict(p){
+  if(p>=90) return "You can read a confusion matrix in your sleep.";
+  if(p>=70) return "Solid. Look over the working for the ones you missed.";
+  if(p>=50) return "Getting there. Re-read the notes, then run it again.";
+  return "Start with the formulas card above and try once more.";
+}
+
+function finish(){
+  fill.style.width='100%';
+  document.getElementById('rail').style.display='none';
+  const pct=Math.round(score/fieldTotal*100);
+  const rows=Q.map((q,i)=>{
+    const r=results[i]||[], c=r.filter(Boolean).length, n=q.ask.length;
+    const col=c===n?'var(--good)':(c===0?'var(--bad)':'var(--fp)');
+    return `<div class="row"><span class="dot" style="background:${col}"></span><span>${q.title}</span><span class="s">${c}/${n}</span></div>`;
+  }).join('');
+  stage.innerHTML=`
+  <section class="card result">
+    <div class="big">${pct}<small>%</small></div>
+    <div style="font-family:'Source Serif 4',Georgia,serif;font-size:22px;font-weight:600">${score} of ${fieldTotal} answers right</div>
+    <p class="sub">${verdict(pct)}</p>
+    <div class="rows">${rows}</div>
+    <div class="foot"><button class="btn ghost" id="review" type="button">Review questions</button><button class="btn" id="again" type="button">Start over</button></div>
+  </section>`;
+  document.getElementById('again').addEventListener('click',()=>{idx=0;score=0;results=Q.map(()=>null);render();window.scrollTo({top:0,behavior:'smooth'});});
+  document.getElementById('review').addEventListener('click',()=>{idx=0;render();window.scrollTo({top:0,behavior:'smooth'});});
+}
+
+// ---- Notes (embedded PDF) ----
+let notesUrl=null;
+function notesBlobUrl(){
+  if(notesUrl) return notesUrl;
+  const bin=atob(NOTES_PDF_B64), bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  notesUrl=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+  return notesUrl;
+}
+document.getElementById('openNotes').addEventListener('click',()=>{
+  const a=document.createElement('a'); a.href=notesBlobUrl(); a.download='precision_recall_f1.pdf';
+  document.body.appendChild(a); a.click(); a.remove();
 });
 
-/* ── stars ── */
-const cv = document.querySelector('.stars');
-function stars(){
-  const d = devicePixelRatio || 1;
-  cv.width = innerWidth*d; cv.height = innerHeight*.55*d;
-  cv.style.width = innerWidth+'px'; cv.style.height = (innerHeight*.55)+'px';
-  const x = cv.getContext('2d');
-  x.clearRect(0,0,cv.width,cv.height);
-  for (let i=0;i<140;i++){
-    x.globalAlpha = Math.random()*.6+.15; x.fillStyle = '#FFF3D9';
-    x.beginPath(); x.arc(Math.random()*cv.width, Math.random()*cv.height,(Math.random()*1.1+.3)*d,0,7); x.fill();
-  }
+// ---- Tabs ----
+const tabs={notes:document.getElementById('tab-notes'),practice:document.getElementById('tab-practice')};
+const views={notes:document.getElementById('view-notes'),practice:document.getElementById('view-practice')};
+function show(name,focus){
+  for(const k in tabs){const on=k===name; tabs[k].setAttribute('aria-selected',on); tabs[k].tabIndex=on?0:-1; views[k].hidden=!on;}
+  if(history.replaceState) history.replaceState(null,'',name==='practice'?'#practice':location.pathname+location.search);
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(focus) tabs[name].focus();
 }
-stars(); addEventListener('resize', stars);
+tabs.notes.addEventListener('click',()=>show('notes'));
+tabs.practice.addEventListener('click',()=>show('practice'));
+document.querySelector('.tabs').addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){show(tabs.notes.getAttribute('aria-selected')==='true'?'practice':'notes',true);}
+});
+document.getElementById('goPractice').addEventListener('click',()=>show('practice'));
+if(location.hash==='#practice') show('practice');
 
-/* ── river diyas + hearts ── */
-const river = document.querySelector('.river');
-for (let i=0;i<9;i++){
-  const l = document.createElement('i');
-  l.style.animationDelay = (-Math.random()*26)+'s';
-  l.style.bottom = (12+Math.random()*26)+'px';
-  l.style.opacity = (.55+Math.random()*.45).toFixed(2);
-  river.appendChild(l);
-}
-if (!reduced){
-  const h = document.querySelector('.hearts');
-  for (let i=0;i<14;i++){
-    const s = document.createElement('span');
-    s.className='heart';
-    s.style.left = Math.random()*100+'vw';
-    s.style.animationDuration = (18+Math.random()*16)+'s';
-    s.style.animationDelay = (-Math.random()*32)+'s';
-    s.style.transform = 'scale('+(.6+Math.random()*.85)+')';
-    h.appendChild(s);
-  }
-}
+render();
 </script>
 </body>
 </html>
